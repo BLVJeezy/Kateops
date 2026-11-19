@@ -12,6 +12,8 @@
 - Motion: Apple-style springs (critically damped default), draggable bottom sheets with velocity projection, reduced-motion respected.
 
 ## Decisions (newest first)
+- 2026-11-19 — Kate's feedback: appointments now hold `segs` [{sid,dur,proc}]. Each treatment is its own block in the agenda, and processing time (inwerktijd) is a striped block that does NOT count as busy, so another client can be booked in it (conflicts/findFree use busy intervals only). Drag the handle at the bottom of a block to change its duration (5-min steps). Services have a `proc` field; default 30 for kleur/keratine/botox/balayage/mèches/highlights. Old appointments without segs: proc 0, total kept.
+- 2026-11-19 — Repeating series: edit or delete asks "Alleen deze" or "Deze en volgende"; a one-off change is marked `exception:true`.
 - 2026-11-19 — Navigation: tab bar removed → one home button (bottom centre) that opens a launcher with 12 large square tiles (Optios-style). Sub-pages open as meer/<view>.
 - 2026-11-19 — Scrolling: switched from an inner scroll container to normal page scrolling (window) for smoother iPhone scrolling; sticky nav + week strip; background locked while a sheet is open; tap on the timeline ignored right after a scroll.
 - 2026-11-19 — Betaal-QR: Kate uploads her own QR (max 3, PNG 640px, settings.qrs). Kassa button "Toon betaal-QR" + checkout method "QR-code" → full-screen white QR with amount + "Betaling ontvangen".
