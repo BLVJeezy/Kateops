@@ -145,9 +145,8 @@ a{color:var(--accent);text-decoration:none}
 .wd.today .n{color:var(--accent)}
 .wd.sel .n{background:var(--ink);color:var(--bg)}
 .wd.closed .n{opacity:.45}
-.zoom{display:flex;background:var(--surface2);border-radius:11px;padding:2px}.zoom button{width:36px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--ink)}.zoom button:active{background:var(--surface)}.zoom button[disabled]{opacity:.3}.zoom svg.i{width:16px;height:16px;stroke-width:2.2}
 .daybar{display:flex;align-items:center;justify-content:space-between;padding:4px 20px 10px;gap:10px}
-.daybar .dt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font:500 20px var(--f-display);letter-spacing:-.01em}
+.daybar .dt{font:500 20px var(--f-display);letter-spacing:-.01em}
 .sumline{color:var(--ink2);font-size:13.5px;padding:0 20px 12px}
 .tl-wrap{touch-action:pan-y}
 .tl{position:relative;margin:0 12px 0 0;display:flex}
@@ -540,7 +539,7 @@ function bindEdgeBack(v){let st=null;const W=()=>v.offsetWidth;const apply=x=>{v
   const end=e=>{if(!st)return;const s0=st;st=null;if(!s0.on)return;const h=s0.hist,a=h[0],z=h[h.length-1];const vel=z[0]-a[0]>0?(z[1]-a[1])/(z[0]-a[0])*1000:0;const cur=z[1]-s0.x;
     if(cur+project(vel)>W()*.4)spring(cur,W(),vel,{response:.3,damping:1},apply,()=>{haptic();back()});else spring(cur,0,vel,{response:.32,damping:1},apply,()=>{v.style.transform='';v.classList.remove('edge-shadow')})};
   v.addEventListener('pointerup',end);v.addEventListener('pointercancel',end)}
-function scrollToNow(v){const oh=dayRange(S.day);const t=S.day===today()?nowMin():oh[0]+60;const y=(t-oh[0])/60*HP();requestAnimationFrame(()=>{const tl=$('.tl',v);if(tl)window.scrollTo(0,Math.max(0,tl.getBoundingClientRect().top+window.scrollY+y-320))})}
+function scrollToNow(v){const oh=dayRange(S.day);const t=S.day===today()?nowMin():oh[0]+60;const y=(t-oh[0])/60*76;requestAnimationFrame(()=>{const tl=$('.tl',v);if(tl)window.scrollTo(0,Math.max(0,tl.getBoundingClientRect().top+window.scrollY+y-320))})}
 let solidState=null,sTick=false;function navSolid(force){const n=$('#main .nav');if(!n)return;const s2=window.scrollY>30;if(force||s2!==solidState){solidState=s2;n.classList.toggle('solid',s2)}}
 window.addEventListener('scroll',()=>{lastScroll=performance.now();if(sTick)return;sTick=true;requestAnimationFrame(()=>{sTick=false;navSolid()})},{passive:true});
 let lockN=0,lockY=0;function lockScroll(){if(lockN++===0){lockY=window.scrollY;document.body.style.top=(-lockY)+'px';document.body.classList.add('locked')}}
@@ -570,13 +569,12 @@ function viewAgenda(){const st=ST();const ws=weekStart(S.day);const team=st.team
   return nav({title:fmtDay(S.day),right:`<button class="btn ghost sm" data-a="today">Vandaag</button>`})+
   `<div class="lt"><div><h1>${title}</h1><div class="sub">${esc(st.salon)}</div></div><div class="flex"><button class="icon-btn" data-a="week" data-k="-1" aria-label="Vorige week">${ic('left')}</button><button class="icon-btn" data-a="week" data-k="1" aria-label="Volgende week">${ic('right')}</button></div></div>
   <div class="sticky-wk"><div class="week" id="weekStrip">${week}</div>${staffChips}
-  <div class="daybar"><div class="dt">${fmtDay(S.day)[0].toUpperCase()+fmtDay(S.day).slice(1)}</div><div class="flex" style="gap:6px;flex:none">${oh?'':'<span class="badge rose">Gesloten</span>'}<div class="zoom" role="group" aria-label="Zoom"><button data-a="zoom" data-k="-1" aria-label="Uitzoomen" ${(S.zoom||1)<=ZMIN?'disabled':''}>${ic('minus')}</button><button data-a="zoom" data-k="1" aria-label="Inzoomen" ${(S.zoom||1)>=ZMAX?'disabled':''}>${ic('plus')}</button></div></div></div>
-  </div><div class="sumline" style="padding-top:10px">${oh?toT(oh[0])+'–'+toT(oh[1])+' · ':''}${real.length?`${real.length} afspra${real.length===1?'ak':'ken'} · ${eur0(expected)} verwacht${gap}`:(oh?'Nog niets gepland. Tik op een uur om een afspraak te maken.':'Je salon is gesloten op deze dag.')}</div>
+  <div class="daybar"><div class="dt">${fmtDay(S.day)[0].toUpperCase()+fmtDay(S.day).slice(1)}</div>${oh?`<span class="badge">${toT(oh[0])}–${toT(oh[1])}</span>`:'<span class="badge rose">Gesloten</span>'}</div>
+  </div><div class="sumline" style="padding-top:10px">${real.length?`${real.length} afspra${real.length===1?'ak':'ken'} · ${eur0(expected)} verwacht${gap}`:(oh?'Nog niets gepland. Tik op een uur om een afspraak te maken.':'Je salon is gesloten op deze dag.')}</div>
   <div class="tl-wrap" id="tlWrap">${timeline(appts)}</div>`}
 let RS=null,suppressClick=0;
-const HP=()=>Math.round(76*(S.zoom||1));
-function layoutAppt(a,segs,s){const H=HP();const out=[];const st=toMin(a.start);const o=segOffsets(segs);segs.forEach((g,i)=>{const t=st+o[i];out.push({k:'s',i,top:(t-s)/60*H,h:Math.max(g.dur/60*H-2,20),t0:t,t1:t+g.dur});if(g.proc>0)out.push({k:'p',i,top:(t+g.dur-s)/60*H,h:Math.max(g.proc/60*H-2,14),t0:t+g.dur,t1:t+g.dur+g.proc})});return out}
-function timeline(appts){const[s,e]=dayRange(S.day);const H=HP();const hours=[];for(let t=s;t<=e;t+=60)hours.push(`<div style="top:${(t-s)/60*H}px">${toT(t)}</div>`);const height=(e-s)/60*H;const team=ST().team||[];
+function layoutAppt(a,segs,s){const H=76;const out=[];const st=toMin(a.start);const o=segOffsets(segs);segs.forEach((g,i)=>{const t=st+o[i];out.push({k:'s',i,top:(t-s)/60*H,h:Math.max(g.dur/60*H-2,20),t0:t,t1:t+g.dur});if(g.proc>0)out.push({k:'p',i,top:(t+g.dur-s)/60*H,h:Math.max(g.proc/60*H-2,14),t0:t+g.dur,t1:t+g.dur+g.proc})});return out}
+function timeline(appts){const[s,e]=dayRange(S.day);const H=76;const hours=[];for(let t=s;t<=e;t+=60)hours.push(`<div style="top:${(t-s)/60*H}px">${toT(t)}</div>`);const height=(e-s)/60*H;const team=ST().team||[];
   const cols=(S.staffFilter==='all'&&team.length>1)?team.map(t=>t.id):[S.staffFilter==='all'?'me':S.staffFilter];const oh=openHours(S.day);
   const colHtml=cols.map(cid=>{const list=appts.filter(a=>(a.staffId||'me')===cid||(cols.length===1&&S.staffFilter==='all')).sort((a,b)=>toMin(a.start)-toMin(b.start));
     const ov=(A,B)=>A.some(([x,y])=>B.some(([p,q])=>x<q&&p<y));const busy={};list.forEach(a=>busy[a.id]=busyOf(a));
@@ -591,22 +589,9 @@ function timeline(appts){const[s,e]=dayRange(S.day);const H=HP();const hours=[];
     const closed=oh?`${oh[0]>s?`<div class="closedz" style="top:0;height:${(oh[0]-s)/60*H}px"></div>`:''}${oh[1]<e?`<div class="closedz" style="top:${(oh[1]-s)/60*H}px;bottom:0"></div>`:''}`:`<div class="closedz" style="inset:0"></div>`;
     const tn=team.find(t=>t.id===cid);return`<div class="col" data-col="${cid}" style="height:${height}px">${cols.length>1?`<div class="col-h" style="position:absolute;top:-24px;left:0;right:0">${esc(tn?.name||'')}</div>`:''}<div class="grid"></div>${closed}<div class="ghost-slot" id="ghost-${cid}"></div>${blocks}</div>`}).join('');
   const nowL=S.day===today()&&nowMin()>=s&&nowMin()<=e?`<div class="now" style="top:${(nowMin()-s)/60*H}px"></div>`:'';
-  return`<div class="tl" style="--hour:${H}px;${cols.length>1?'margin-top:24px':''}"><div class="hours" style="height:${height}px">${hours.join('')}</div><div class="cols" id="tlCols" data-s="${s}" style="height:${height}px">${nowL}${colHtml}</div></div><div style="height:40px"></div>`}
+  return`<div class="tl" style="${cols.length>1?'margin-top:24px':''}"><div class="hours" style="height:${height}px">${hours.join('')}</div><div class="cols" id="tlCols" data-s="${s}" style="height:${height}px">${nowL}${colHtml}</div></div><div style="height:40px"></div>`}
 let MVG=null;
-const ZMIN=.6,ZMAX=3,ZSTEPS=[.6,.8,1,1.3,1.7,2.2,3];let PINCH=null;
-try{const z=+localStorage.getItem('kitoko-zoom');if(z>=ZMIN&&z<=ZMAX)S.zoom=z}catch(e){}
-function setZoom(z,focusY){z=Math.max(ZMIN,Math.min(ZMAX,Math.round(z*100)/100));const cols=$('#tlCols');const fy=focusY!=null?focusY:innerHeight/2;let minAt=null,s=0;
-  if(cols){s=+cols.dataset.s;const r=cols.getBoundingClientRect();minAt=s+(fy-r.top)/HP()*60}
-  S.zoom=z;try{localStorage.setItem('kitoko-zoom',String(z))}catch(e){}doRender();const c2=$('#tlCols');if(c2&&minAt!=null){const r2=c2.getBoundingClientRect();window.scrollBy(0,r2.top+(minAt-s)/60*HP()-fy)}}
-function bindPinch(wrap){const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
-  wrap.addEventListener('touchstart',e=>{if(e.touches.length===2&&!MVG&&!RS){const el=$('.tl',wrap);const y=(e.touches[0].clientY+e.touches[1].clientY)/2;PINCH={d0:dist(e.touches),z0:S.zoom||1,y,el,k:1};el.style.transformOrigin=`50% ${y-el.getBoundingClientRect().top}px`;el.style.willChange='transform'}},{passive:true});
-  wrap.addEventListener('touchmove',e=>{if(!PINCH||e.touches.length!==2)return;e.preventDefault();const P=PINCH;P.k=Math.max(ZMIN/P.z0,Math.min(ZMAX/P.z0,dist(e.touches)/P.d0));P.el.style.transform=`scaleY(${P.k})`},{passive:false});
-  const end=()=>{if(!PINCH)return;const p=PINCH;PINCH=null;p.el.style.transform='';p.el.style.willChange='';suppressClick=Date.now();if(Math.abs(p.k-1)>.04){haptic(6);setZoom(p.z0*p.k,p.y)}};
-  wrap.addEventListener('touchend',e=>{if(e.touches.length<2)end()});wrap.addEventListener('touchcancel',end);
-  ['gesturestart','gesturechange'].forEach(n=>wrap.addEventListener(n,e=>e.preventDefault(),{passive:false}));
-  wrap.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();setZoom((S.zoom||1)*(e.deltaY<0?1.08:.93),e.clientY)},{passive:false})}
-
-function bindMove(cols){const s=+cols.dataset.s;const H=HP();let lp=null;
+function bindMove(cols){const s=+cols.dataset.s;const H=76;let lp=null;
   const endMin=()=>{const r=dayRange(S.day);return r[1]};
   const start=(x,y,target)=>{if(RS||MVG)return;const blk=target.closest('.ap[data-k="s"]');if(!blk||target.closest('.rz'))return;const a=get('appts',blk.dataset.id);if(!a||a.status==='betaald')return;
     lp={x,y,a,blk,t:setTimeout(()=>lift(y),380)}};
@@ -628,7 +613,7 @@ function bindMove(cols){const s=+cols.dataset.s;const H=HP();let lp=null;
     const nstart=toT(M.cur);const segs=a.type==='blok'?null:segsOf(a);
     const asked=saveWithSeries(a,{start:nstart},'Verplaatst naar '+nstart);haptic(10);if(asked)return;const cf=conflicts(a.date,nstart,M.total,a.staffId,a.id,segs);
     toast(`${a.type==='blok'?'Blok':apptName(a)} verplaatst naar ${nstart}`+(cf.length?` · overlapt met ${apptName(cf[0])}`:''))};
-  cols.addEventListener('touchstart',e=>{if(e.touches.length!==1){if(lp){clearTimeout(lp.t);lp=null}return}const t=e.touches[0];start(t.clientX,t.clientY,e.target)},{passive:true});
+  cols.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];start(t.clientX,t.clientY,e.target)},{passive:true});
   cols.addEventListener('touchmove',e=>{const t=e.touches[0];if(MVG){e.preventDefault()}move(t.clientY)},{passive:false});
   cols.addEventListener('touchend',end);cols.addEventListener('touchcancel',end);
   cols.addEventListener('contextmenu',e=>{if(e.target.closest('.ap'))e.preventDefault()});
@@ -639,7 +624,7 @@ function bindResize(cols){const s=+cols.dataset.s;cols.addEventListener('pointer
   try{h.setPointerCapture(e.pointerId)}catch(_){}RS={id:a.id};blk.classList.add('resizing');const tip=document.createElement('div');tip.className='rz-tip';blk.appendChild(tip);
   const els=$$(`.ap[data-id="${a.id}"]`,cols);const relayout=()=>{const L=layoutAppt(a,normSegs(segs).segs,s);els.forEach(el=>{const B=L.find(x=>x.k===el.dataset.k&&x.i===+el.dataset.i);if(!B){el.style.display='none';return}el.style.display='';el.style.top=B.top+'px';el.style.height=B.h+'px'});const tm=$('.tm',els.find(x=>x.dataset.k==='s'&&x.dataset.i==='0'));if(tm)tm.textContent=a.start+'–'+toT(toMin(a.start)+segsTotal(normSegs(segs).segs))};
   const setTip=()=>{const o=segOffsets(segs);let t=toMin(a.start)+o[i]+segs[i].dur+(kind==='p'?(segs[i].proc||0):0);tip.textContent=`tot ${toT(t)} · ${kind==='p'?'inwerk ':''}${last} min`};setTip();haptic(6);
-  const mv=ev=>{const d=Math.round((ev.clientY-y0)/HP()*60/step)*step;const nv=Math.max(kind==='s'?5:0,orig+d);if(nv===last)return;last=nv;if(kind==='s')segs[i].dur=nv;else segs[i].proc=nv;haptic(3);relayout();setTip()};
+  const mv=ev=>{const d=Math.round((ev.clientY-y0)/76*60/step)*step;const nv=Math.max(kind==='s'?5:0,orig+d);if(nv===last)return;last=nv;if(kind==='s')segs[i].dur=nv;else segs[i].proc=nv;haptic(3);relayout();setTip()};
   const up=()=>{h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);RS=null;suppressClick=Date.now();blk.classList.remove('resizing');tip.remove();
     if(last===orig){render(true);return}{const n=normSegs(segs).segs;segs.length=0;segs.push(...n)}const total=segsTotal(segs);
     if(isBlok)saveWithSeries(a,{dur:total},'Duur aangepast');else{const sv=get('services',segs[i].sid);if(saveWithSeries(a,{segs:clone(segs),dur:total,serviceIds:segs.map(x=>x.sid).filter(Boolean)},(kind==='p'?'Inwerktijd':(sv?sv.name:'Duur'))+' aangepast naar '+last+' min'))return;const cf=conflicts(a.date,a.start,total,a.staffId,a.id,isBlok?null:segs);toast((kind==='p'?'Inwerktijd ':(sv?sv.name+' ':''))+last+' min'+(cf.length?' · overlapt met '+apptName(cf[0]):''))}};
@@ -647,14 +632,14 @@ function bindResize(cols){const s=+cols.dataset.s;cols.addEventListener('pointer
 
 function bindAgendaGestures(v){const wrap=$('#tlWrap',v),cols=$('#tlCols',v),strip=$('#weekStrip',v);if(!wrap)return;
   // tap empty slot
-  cols.addEventListener('click',e=>{if(e.target.closest('.ap'))return;if(performance.now()-lastScroll<350)return;const col=e.target.closest('.col');if(!col)return;const r=col.getBoundingClientRect();const s=+cols.dataset.s;const step=ST().slot||15;const m=s+Math.floor((e.clientY-r.top)/HP()*60/step)*step;const g=$('#ghost-'+col.dataset.col);if(g){g.style.top=((m-s)/60*HP())+'px';g.style.height=(45/60*HP()-2)+'px';g.textContent=toT(m);g.style.opacity='1';setTimeout(()=>g.style.opacity='0',650)}apptSheet({date:S.day,start:toT(m),staffId:col.dataset.col==='me'||!col.dataset.col?'me':col.dataset.col})});
+  cols.addEventListener('click',e=>{if(e.target.closest('.ap'))return;if(performance.now()-lastScroll<350)return;const col=e.target.closest('.col');if(!col)return;const r=col.getBoundingClientRect();const s=+cols.dataset.s;const step=ST().slot||15;const m=s+Math.floor((e.clientY-r.top)/76*60/step)*step;const g=$('#ghost-'+col.dataset.col);if(g){g.style.top=((m-s)/60*76)+'px';g.style.height=(45/60*76-2)+'px';g.textContent=toT(m);g.style.opacity='1';setTimeout(()=>g.style.opacity='0',650)}apptSheet({date:S.day,start:toT(m),staffId:col.dataset.col==='me'||!col.dataset.col?'me':col.dataset.col})});
   // horizontal swipe to change day / week
-  const sw=(el,unit)=>{let st=null,ptrs=0;const dn=()=>{ptrs=Math.max(0,ptrs-1)};el.addEventListener('pointerup',dn);el.addEventListener('pointercancel',dn);el.addEventListener('pointerdown',e=>{ptrs++;if(ptrs>1||PINCH){st=null;el.style.transform='';el.style.opacity='';return}if(e.pointerType==='mouse'||e.target.closest('.rz')||RS||MVG)return;st={x:e.clientX,y:e.clientY,t:e.timeStamp,lock:null}},{passive:true});
+  const sw=(el,unit)=>{let st=null;el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'||e.target.closest('.rz')||RS||MVG)return;st={x:e.clientX,y:e.clientY,t:e.timeStamp,lock:null}},{passive:true});
     el.addEventListener('pointermove',e=>{if(!st)return;if(MVG||RS){st=null;el.style.transform='';el.style.opacity='';return}const dx=e.clientX-st.x,dy=e.clientY-st.y;if(!st.lock&&(Math.abs(dx)>10||Math.abs(dy)>10))st.lock=Math.abs(dx)>Math.abs(dy)*1.2?'x':'y';if(st.lock==='x'){el.style.transform=`translateX(${dx*.6}px)`;el.style.opacity=String(1-Math.min(.5,Math.abs(dx)/600))}},{passive:true});
     const end=e=>{if(!st)return;const dx=e.clientX-st.x,dt=Math.max(1,e.timeStamp-st.t),vel=dx/dt;const lock=st.lock;st=null;if(lock!=='x'){el.style.transform='';return}
       if(Math.abs(dx)>70||Math.abs(vel)>.45){const dir=dx<0?1:-1;el.style.transition='transform .18s ease-in,opacity .18s';el.style.transform=`translateX(${-dir*120}px)`;el.style.opacity='0';setTimeout(()=>{S.dayDir=dir;haptic();S.day=addDays(S.day,dir*unit);render()},140)}else{el.style.transition='transform .3s cubic-bezier(.2,.9,.3,1),opacity .3s';el.style.transform='';el.style.opacity='';setTimeout(()=>el.style.transition='',320)}};
     el.addEventListener('pointerup',end);el.addEventListener('pointercancel',()=>{st=null;el.style.transform='';el.style.opacity=''})};
-  sw(wrap,1);sw(strip,7);bindResize(cols);bindMove(cols);bindPinch(wrap)}
+  sw(wrap,1);sw(strip,7);bindResize(cols);bindMove(cols)}
 
 /* appointment sheets */
 function detailPlan(a){const segs=segsOf(a);const many=segs.length>1&&a.status!=='betaald';const OF=segOffsets(segs);let t;return segs.map((g,i)=>{const sv=get('services',g.sid);t=toMin(a.start)+OF[i];const t0=t;t+=g.dur;
@@ -1107,7 +1092,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!
   switch(a){
   case'launcher':openLauncher();break;
   case'tab':if(S.route.tab===k&&!S.route.stack.length){window.scrollTo({top:0,behavior:'smooth'})}else go(k);break;
-  case'back':back();break;case'today':S.day=today();render();break;case'zoom':{const cur=S.zoom||1;const n=+k>0?ZSTEPS.find(z=>z>cur+.01):[...ZSTEPS].reverse().find(z=>z<cur-.01);if(n){haptic(4);setZoom(n)}break}case'pickDay':S.day=el.dataset.d;render();break;case'week':S.day=addDays(S.day,7*k);render();break;case'staff':S.staffFilter=k;render();break;
+  case'back':back();break;case'today':S.day=today();render();break;case'pickDay':S.day=el.dataset.d;render();break;case'week':S.day=addDays(S.day,7*k);render();break;case'staff':S.staffFilter=k;render();break;
   case'newAppt':apptSheet({date:S.day,start:S.day===today()?toT(Math.ceil(nowMin()/15)*15):(openHours(S.day)?toT(openHours(S.day)[0]):'10:00')});break;
   case'openAppt':apptDetail(id);break;case'client':S.clientTab='overzicht';if(S.route.tab!=='klanten'&&!S.route.stack.length){S.route.tab='klanten'}push('client',id);break;
   case'newClient':clientSheet();break;case'editClient':clientSheet(get('clients',id));break;case'ctab':S.clientTab=k;render();break;case'cfilter':S.clientFilter=k;S.clientLimit=150;scrollMem['klanten/']=0;render(true);break;
