@@ -269,6 +269,7 @@ a{color:var(--accent);text-decoration:none}
 /* ── Glass buttons (Liquid Glass-style) ── */
 .btn,.fab,.homebtn,.chip,.tile .sq,.simbtn .sq,.seg button,.qa a,.qa button,.demo-bar button{position:relative;overflow:hidden;isolation:isolate;transition:transform .42s cubic-bezier(.3,1.45,.5,1),box-shadow .3s,background-color .2s,opacity .15s}
 .btn,.chip{background:color-mix(in srgb,var(--surface) 62%,transparent);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(31,26,22,.05),0 6px 18px rgba(31,26,22,.06)}
+.fab,.homebtn{position:fixed!important;transform:translateZ(0)}
 .btn.p,.fab,.homebtn,.tile.on .sq,.simbtn.on .sq,.demo-bar button{background:linear-gradient(180deg,var(--accent-hi),var(--accent) 62%);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -6px 14px rgba(120,10,50,.18),0 8px 22px var(--accent-glow)}
 .homebtn{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -8px 18px rgba(120,10,50,.2),0 12px 30px var(--accent-glow)}
 .btn.ghost{background:transparent;border-color:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
@@ -279,7 +280,7 @@ a{color:var(--accent);text-decoration:none}
 /* specular sheen + touch light */
 .btn::before,.fab::before,.homebtn::before,.chip::before,.tile .sq::before,.simbtn .sq::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 48%,transparent 62%);background-size:260% 100%;background-position:120% 0;opacity:.0}
 .btn::after,.fab::after,.homebtn::after,.chip::after,.tile .sq::after,.simbtn .sq::after,.seg button::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.55),rgba(255,255,255,.12) 38%,transparent 65%);opacity:0;transition:opacity .45s}
-.is-press{transform:scale(1.06)!important;transition:transform .2s cubic-bezier(.2,1.6,.4,1),box-shadow .2s!important}
+.is-press{transform:scale(1.06) translateZ(0)!important;transition:transform .2s cubic-bezier(.2,1.6,.4,1),box-shadow .2s!important}
 .tile.is-press{transform:none!important}.tile.is-press .sq{transform:scale(1.1)}
 .is-press::after,.tile.is-press .sq::after{opacity:1;transition:opacity .08s}
 .is-press::before,.tile.is-press .sq::before{animation:sheen .7s cubic-bezier(.3,.7,.3,1) both}
