@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EFE8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>Kitoko Salon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4EFE8; --surface:#FFFDF9; --surface2:#EFE8DF; --ink:#1F1A16; --ink2:#6B625A; --ink3:#9A9088;
+  --line:rgba(31,26,22,.09); --line2:rgba(31,26,22,.16);
+  --accent:#B4532A; --accent-soft:#F3DED3; --accent-ink:#fff;
+  --sage:#5F7A61; --sage-soft:#E1E8DE; --amber:#B9822A; --amber-soft:#F4E7CF; --rose:#B23B3B; --rose-soft:#F5DCD8;
+  --chrome:rgba(250,246,240,.78); --shadow:0 1px 2px rgba(31,26,22,.05),0 8px 24px rgba(31,26,22,.06);
+  --r:16px; --hour:76px;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+  --f-display:"Fraunces",Georgia,serif; --f-ui:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141110; --surface:#1E1A17; --surface2:#28221E; --ink:#F3ECE4; --ink2:#B3A89D; --ink3:#7D736A;
+  --line:rgba(243,236,228,.09); --line2:rgba(243,236,228,.17);
+  --accent:#D9774B; --accent-soft:#3A2419; --sage:#8FB091; --sage-soft:#1F2A20; --amber:#D9A653; --amber-soft:#33281A; --rose:#E07A72; --rose-soft:#3A1E1C;
+  --chrome:rgba(24,20,18,.74); --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark;}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{margin:0;height:100%;height:100dvh;overscroll-behavior:none;background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-ui);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button,a,.chip,[data-a]{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button{cursor:pointer;border:0;background:none;padding:0}
+input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;outline:none;min-height:48px;font-size:16px;-webkit-appearance:none;appearance:none}
+input[type=checkbox]{-webkit-appearance:auto;appearance:auto}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--ink3) 50%),linear-gradient(135deg,var(--ink3) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{min-height:84px;resize:vertical}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#app{height:100%;display:flex;flex-direction:column}
+#main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding:calc(var(--safe-t) + 54px) 0 calc(var(--safe-b) + 170px)}
+.view.push{background:var(--bg);animation:pushIn .42s cubic-bezier(.2,.9,.25,1)}
+@keyframes pushIn{from{transform:translateX(100%)}to{transform:none}}
+.nav{position:sticky;top:calc(-1 * (var(--safe-t) + 54px));margin-top:calc(-1 * (var(--safe-t) + 54px));z-index:20;height:calc(var(--safe-t) + 54px);padding:var(--safe-t) 10px 0;display:flex;align-items:center;gap:6px;background:transparent;transition:background .2s}
+.nav.solid{background:var(--chrome);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);box-shadow:0 1px 0 var(--line)}
+.nav .t{flex:1;text-align:center;font-weight:600;opacity:0;transition:opacity .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav.solid .t{opacity:1}
+.nav .side{min-width:72px;display:flex;gap:2px;align-items:center}
+.nav .side.r{justify-content:flex-end}
+.icon-btn{width:44px;height:44px;border-radius:22px;display:grid;place-items:center;color:var(--ink)}
+.icon-btn:active{background:var(--line)}
+.back{display:flex;align-items:center;gap:2px;color:var(--accent);font-weight:500;height:44px;padding:0 6px}
+.lt{padding:4px 20px 14px;display:flex;align-items:flex-end;gap:12px;justify-content:space-between}
+.lt h1{font:500 34px/1.05 var(--f-display);letter-spacing:-.02em;margin:0;font-optical-sizing:auto}
+.lt .sub{color:var(--ink2);font-size:14px;margin-top:4px}
+.pad{padding:0 16px}
+.section-t{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin:22px 20px 8px}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);margin:0 16px}
+.list>*{display:flex;align-items:center;gap:12px;padding:13px 16px;min-height:56px;width:100%;text-align:left;border-bottom:1px solid var(--line)}
+.list>*:last-child{border-bottom:0}
+.cv{content-visibility:auto;contain-intrinsic-size:auto 64px}
+.view{scroll-padding-top:calc(var(--safe-t) + 120px)}
+.more-sentinel{height:60px;display:grid;place-items:center;color:var(--ink3);font-size:13px}
+.list>button:active,.list>a:active{background:var(--line)}
+.row-main{flex:1;min-width:0}
+.row-t{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-s{color:var(--ink2);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-r{color:var(--ink2);font-size:14px;text-align:right;white-space:nowrap}
+.chev{color:var(--ink3)}
+a{color:var(--accent);text-decoration:none}
+.av{width:40px;height:40px;border-radius:20px;display:grid;place-items:center;font-weight:600;font-size:14px;flex:none;background:var(--surface2);color:var(--ink2);letter-spacing:.02em}
+.av.lg{width:76px;height:76px;border-radius:38px;font:500 28px var(--f-display)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 18px;border-radius:14px;font-weight:600;background:var(--surface2);color:var(--ink);transition:transform .1s ease-out,opacity .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.p{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.danger{background:var(--rose-soft);color:var(--rose)}
+.btn.sm{height:38px;padding:0 13px;border-radius:11px;font-size:14px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:40px;padding:0 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line2);font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:active{transform:scale(.97)}
+.seg{display:flex;background:var(--surface2);border-radius:12px;padding:3px;gap:2px}
+.seg button{flex:1;height:40px;border-radius:9px;font-weight:500;font-size:14px;color:var(--ink2)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--ink2)}
+.badge.sage{background:var(--sage-soft);color:var(--sage)}.badge.amber{background:var(--amber-soft);color:var(--amber)}.badge.rose{background:var(--rose-soft);color:var(--rose)}.badge.clay{background:var(--accent-soft);color:var(--accent)}
+.empty{text-align:center;color:var(--ink2);padding:40px 30px}
+.empty h3{font:500 22px var(--f-display);color:var(--ink);margin:12px 0 6px}
+.field{margin:0 0 14px}
+.field>label{display:block;font-size:13px;font-weight:500;color:var(--ink2);margin:0 0 6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.search{position:relative;margin:0 16px 10px}
+.search svg{position:absolute;left:13px;top:12px;color:var(--ink3);width:20px;height:20px}
+.search input{padding-left:40px;background:var(--surface2);border-color:transparent}
+.warn{display:flex;gap:10px;align-items:flex-start;background:var(--rose-soft);color:var(--rose);border-radius:12px;padding:11px 13px;font-size:14px;font-weight:500}
+.note{background:var(--amber-soft);color:var(--amber);border-radius:12px;padding:10px 13px;font-size:13.5px}
+.muted{color:var(--ink2)}.small{font-size:13px}.num{font-variant-numeric:tabular-nums}
+.hr{height:1px;background:var(--line);margin:14px 0}
+.mt{margin-top:14px}.mb{margin-bottom:14px}.flex{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.wrap{flex-wrap:wrap}
+
+/* tab bar */
+.tabbar{transform:translateZ(0);position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;padding:6px 6px calc(var(--safe-b) + 6px);background:var(--chrome);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:0 -1px 0 var(--line)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:52px;justify-content:center;font-size:11px;font-weight:500;color:var(--ink3);border-radius:12px}
+.tabbar button.on{color:var(--accent)}
+.tabbar button:active{transform:scale(.94)}
+.tabbar svg.i{width:25px;height:25px}
+.fab{transform:translateZ(0);position:fixed;right:18px;bottom:calc(var(--safe-b) + 82px);z-index:35;width:58px;height:58px;border-radius:29px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(180,83,42,.35);transition:transform .1s ease-out}
+.fab:active{transform:scale(.93)}
+.fab svg.i{width:26px;height:26px;stroke-width:2.1}
+
+/* agenda */
+.sticky-wk{position:sticky;top:calc(var(--safe-t) + 54px);z-index:15;background:var(--bg);padding-top:4px;box-shadow:0 1px 0 var(--line)}
+.slide-l{animation:slideL .32s cubic-bezier(.2,.9,.25,1)}.slide-r{animation:slideR .32s cubic-bezier(.2,.9,.25,1)}
+@keyframes slideL{from{transform:translateX(48px);opacity:.2}to{transform:none;opacity:1}}@keyframes slideR{from{transform:translateX(-48px);opacity:.2}to{transform:none;opacity:1}}
+.edge-shadow{box-shadow:-10px 0 30px rgba(0,0,0,.14)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 10px 10px;touch-action:pan-y}
+.wd{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 8px;border-radius:14px;color:var(--ink2)}
+.wd .n{font:500 19px/1 var(--f-display);color:var(--ink);width:36px;height:36px;border-radius:18px;display:grid;place-items:center}
+.wd .l{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.wd .dots{height:5px;display:flex;gap:2px}.wd .dots i{width:5px;height:5px;border-radius:3px;background:var(--accent);opacity:.55}
+.wd.today .n{color:var(--accent)}
+.wd.sel .n{background:var(--ink);color:var(--bg)}
+.wd.closed .n{opacity:.45}
+.daybar{display:flex;align-items:center;justify-content:space-between;padding:4px 20px 10px;gap:10px}
+.daybar .dt{font:500 20px var(--f-display);letter-spacing:-.01em}
+.sumline{color:var(--ink2);font-size:13.5px;padding:0 20px 12px}
+.tl-wrap{touch-action:pan-y}
+.tl{position:relative;margin:0 12px 0 0;display:flex}
+.tl .hours{width:52px;flex:none;position:relative}
+.tl .hours div{position:absolute;right:8px;font-size:11.5px;color:var(--ink3);transform:translateY(-7px);font-variant-numeric:tabular-nums}
+.tl .cols{flex:1;position:relative;display:flex;gap:4px}
+.tl .col{flex:1;position:relative;min-width:0}
+.tl .col-h{position:sticky;top:calc(var(--safe-t) + 54px);z-index:5;font-size:12px;font-weight:600;text-align:center;padding:4px 0;background:var(--bg);color:var(--ink2)}
+.tl .grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(rgba(127,127,127,.05) 1px,transparent 1px);background-size:100% var(--hour),100% calc(var(--hour)/2)}
+.tl .closedz{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,transparent 0 6px,var(--line) 6px 7px)}
+.ap{position:absolute;left:2px;right:2px;border-radius:12px;padding:6px 9px;overflow:hidden;text-align:left;background:var(--c,#D9A27E);color:#2A211C;box-shadow:0 1px 2px rgba(0,0,0,.06);border-left:3px solid rgba(0,0,0,.18);transition:transform .1s ease-out;display:block}
+.ap:active{transform:scale(.98)}
+.ap .tm{font-size:11.5px;font-weight:600;opacity:.75;font-variant-numeric:tabular-nums}
+.ap .nm{font-weight:600;font-size:14px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap .sv{font-size:12.5px;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap .st{position:absolute;right:7px;top:6px;display:flex;gap:3px}
+.ap .st svg{width:15px;height:15px}
+.ap.blok{background:repeating-linear-gradient(135deg,var(--surface2) 0 8px,var(--bg) 8px 16px);color:var(--ink2);border-left-color:var(--line2)}
+.ap.betaald,.ap.voltooid{opacity:.62}
+.ap.noshow{background:var(--rose-soft);color:var(--rose)}
+.ap.short .sv{display:none}
+.now{position:absolute;left:-6px;right:0;height:2px;background:var(--accent);z-index:4;pointer-events:none}
+.now::before{content:"";position:absolute;left:0;top:-4px;width:10px;height:10px;border-radius:5px;background:var(--accent)}
+.ghost-slot{position:absolute;left:2px;right:2px;border-radius:12px;border:2px dashed var(--accent);background:var(--accent-soft);opacity:0;pointer-events:none;transition:opacity .15s}
+
+/* sheet */
+.sheet-root{position:fixed;inset:0;z-index:100}
+.scrim{position:absolute;inset:0;background:rgba(20,15,12,.38);opacity:0}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - var(--safe-t) - 28px);background:var(--bg);border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;will-change:transform;transform:translateY(100%)}
+.sheet.tall{height:calc(100% - var(--safe-t) - 28px)}
+.grab{height:22px;display:grid;place-items:center;flex:none;touch-action:none;cursor:grab}
+.grab span{width:38px;height:5px;border-radius:3px;background:var(--line2)}
+.sheet-h{display:flex;align-items:center;gap:8px;padding:0 10px 8px 20px;touch-action:none;flex:none}
+.sheet-h h2{flex:1;margin:0;font:500 23px var(--f-display);letter-spacing:-.01em}
+.sheet-b{overflow-y:auto;padding:4px 20px calc(var(--safe-b) + 22px);flex:1;overscroll-behavior:contain}
+.sheet-f{flex:none;padding:12px 20px calc(var(--safe-b) + 14px);border-top:1px solid var(--line);background:var(--bg);display:flex;gap:10px}
+.sheet-root.under .sheet{filter:brightness(.92)}
+@media (min-width:720px){.sheet{left:50%;width:560px;margin-left:-280px;bottom:auto;top:50%;border-radius:22px;max-height:86vh}.sheet.tall{height:86vh}.grab{display:none}.sheet-h{padding-top:16px}}
+
+/* misc */
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 92px);transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .2s,transform .3s cubic-bezier(.2,.9,.3,1.2);max-width:86vw;text-align:center;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.syncdot{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink3)}
+.syncdot i{width:7px;height:7px;border-radius:4px;background:var(--ink3)}
+.syncdot.ok i{background:var(--sage)}.syncdot.local i{background:var(--amber)}.syncdot.err i{background:var(--rose)}
+.demo-bar{position:fixed;bottom:calc(var(--safe-b) + 84px);left:16px;white-space:nowrap;z-index:45;background:var(--ink);color:var(--bg);border-radius:20px;padding:6px 8px 6px 14px;font-size:13px;font-weight:500;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow)}
+.demo-bar button{background:var(--accent);color:#fff;border-radius:14px;height:28px;padding:0 10px;font-weight:600;font-size:12.5px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.kpi{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 15px}
+.kpi .k{font-size:12.5px;color:var(--ink2);font-weight:500}
+.kpi .v{font:500 26px/1.15 var(--f-display);letter-spacing:-.01em;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;color:var(--ink3);margin-top:2px}
+.kpi.hero{grid-column:1/-1;background:var(--ink);color:var(--bg)}
+.kpi.hero .k,.kpi.hero .d{color:rgba(255,255,255,.62)}
+@media (prefers-color-scheme:dark){.kpi.hero{background:var(--accent-soft);color:var(--ink)}.kpi.hero .k,.kpi.hero .d{color:var(--ink2)}}
+.kpi.hero .v{font-size:40px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:130px;padding:14px 14px 0}
+.bars .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bars .b i{display:block;width:100%;max-width:26px;border-radius:5px 5px 2px 2px;background:var(--accent);min-height:2px}
+.bars .b.zero i{background:var(--line2)}
+.bars .b span{font-size:10.5px;color:var(--ink3)}
+.meter{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}.meter i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.ticket-line{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ticket-line .q{display:flex;align-items:center;gap:4px}
+.ticket-line .q button{width:40px;height:40px;border-radius:20px;background:var(--surface2);display:grid;place-items:center}
+.ticket-line .q button svg{width:16px;height:16px}
+.ticket-line .pr{width:86px;text-align:right;font-weight:600}
+.ticket-line .pr input{text-align:right;padding:6px 8px;min-height:36px;font-weight:600}
+.pay-m{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pay-m button{height:52px;border-radius:14px;border:1.5px solid var(--line2);background:var(--surface);font-weight:600}
+.pay-m button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.totals{background:var(--surface);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow)}
+.totals .r{display:flex;justify-content:space-between;padding:3px 0;color:var(--ink2);font-size:14px}
+.totals .r.big{color:var(--ink);font:500 24px var(--f-display);padding-top:8px}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick button{padding:9px 13px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line2);text-align:left;font-size:14px;display:flex;flex-direction:column;gap:1px;min-width:46%;flex:1}
+.pick button small{color:var(--ink2);font-size:12.5px}
+.pick button.on{border-color:var(--accent);background:var(--accent-soft)}
+.slots{display:flex;flex-wrap:wrap;gap:8px}
+.slots button{height:40px;padding:0 12px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line2);font-weight:500;font-size:14px}
+.cc{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;margin:0 16px 10px}
+.cc .f{font:500 19px/1.3 var(--f-display);margin:6px 0}
+.photos{display:flex;gap:8px;overflow-x:auto;margin-top:8px}
+.photos img{width:88px;height:110px;object-fit:cover;border-radius:10px;flex:none}
+.hero-fiche{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 20px 8px}
+.hero-fiche h1{font:500 30px/1.1 var(--f-display);letter-spacing:-.02em;margin:12px 0 2px}
+.qa{display:flex;gap:10px;justify-content:center;margin:14px 0 6px;flex-wrap:wrap}
+.qa a,.qa button{display:flex;flex-direction:column;align-items:center;gap:4px;width:72px;padding:10px 0;border-radius:14px;background:var(--surface);box-shadow:var(--shadow);font-size:12px;font-weight:500;color:var(--accent)}
+.alpha{margin:16px 20px 6px;font:500 15px var(--f-display);color:var(--accent)}
+.onb{max-width:520px;margin:0 auto;padding:calc(var(--safe-t) + 30px) 22px 40px}
+.onb h1{font:500 40px/1.02 var(--f-display);letter-spacing:-.025em;margin:22px 0 10px}
+.onb p{color:var(--ink2);margin:0 0 22px}
+.mark{width:64px;height:64px}
+.cover{height:150px;margin:0 16px 4px;border-radius:var(--r);background:var(--surface2) center/cover;display:flex;align-items:flex-end;padding:14px;color:#fff;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.45))}
+.cover span{position:relative;z-index:1;font:500 22px var(--f-display)}
+.qr-ov{position:fixed;inset:0;z-index:300;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(var(--safe-t) + 20px) 24px calc(var(--safe-b) + 24px);text-align:center;opacity:0;transform:scale(.96);transition:opacity .2s,transform .3s cubic-bezier(.2,.9,.3,1)}
+.qr-ov.on{opacity:1;transform:none}
+.qr-ov img{width:min(78vw,380px);height:auto;image-rendering:pixelated;border-radius:8px;margin:18px 0}
+.qr-ov .amt{font:500 48px/1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.qr-ov .x{position:absolute;top:calc(var(--safe-t) + 10px);right:12px;color:#111}
+.qr-ov .tabs{display:flex;gap:8px;margin-top:6px}.qr-ov .tabs button{height:36px;padding:0 14px;border-radius:18px;border:1px solid #ddd;font-weight:500;color:#111}.qr-ov .tabs button.on{background:#111;color:#fff;border-color:#111}
+.check-anim{width:76px;height:76px;border-radius:38px;background:var(--sage-soft);color:var(--sage);display:grid;place-items:center;margin:8px auto 10px}
+.check-anim svg{width:40px;height:40px;stroke-width:2.4;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s .15s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media (prefers-reduced-transparency:reduce){.tabbar,.nav.solid{background:var(--bg);backdrop-filter:none}}
+@media (min-width:900px){.view>*{max-width:760px;margin-left:auto;margin-right:auto}.view>.card,.view>.cc{margin-left:auto;margin-right:auto}.tabbar{justify-content:center;gap:20px}.tabbar button{flex:0 0 96px}}
+</style>
+</head>
+<body>
+<div id="app"><div id="main"></div></div>
+<nav class="tabbar" id="tabbar" aria-label="Hoofdmenu"></nav>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="fileIn" class="sr" accept="image/*">
+<input type="file" id="jsonIn" class="sr" accept=".json,application/json,.csv,text/csv">
+<script>
+(()=>{'use strict';
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const pad=n=>String(n).padStart(2,'0');
+const toMin=t=>{if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+(m||0)};
+const toT=m=>pad(Math.floor(m/60))+':'+pad(Math.round(m%60));
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pISO=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{const d=pISO(s);d.setDate(d.getDate()+n);return iso(d)};
+const today=()=>iso(new Date());
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const r2=n=>Math.round((+n||0)*100)/100;
+const eur=n=>'€ '+r2(n).toLocaleString('nl-BE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const eur0=n=>'€ '+Math.round(n||0).toLocaleString('nl-BE');
+const DAYS=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const DSH=['zo','ma','di','wo','do','vr','za'];
+const MON=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const MSH=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const fmtDay=s=>{const d=pISO(s);return DAYS[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
+const fmtShort=s=>{const d=pISO(s);return d.getDate()+' '+MSH[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')};
+const weekStart=s=>{const d=pISO(s);const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return iso(d)};
+const daysBetween=(a,b)=>Math.round((pISO(b)-pISO(a))/864e5);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const fullName=c=>c?[c.first,c.last].filter(Boolean).join(' '):'';
+const initials=c=>((c?.first||'?')[0]+((c?.last||'')[0]||'')).toUpperCase();
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const phoneIntl=p=>{let d=String(p||'').replace(/\D/g,'');if(!d)return'';if(d.startsWith('00'))d=d.slice(2);else if(d.startsWith('0'))d='32'+d.slice(1);else if(d.length===9&&d.startsWith('4'))d='32'+d;return d};
+const waLink=(p,txt)=>{const n=phoneIntl(p);return n?'https://wa.me/'+n+'?text='+encodeURIComponent(txt||''):''};
+const SVC_COLORS=['#E3B392','#AFC3AB','#D6C59E','#A9BFCB','#D6A7A3','#C2B6A8','#E6C27A','#B9C7A0'];
+const STAFF_COLORS=['#B4532A','#5F7A61','#8A6A3B','#5B7487','#9C5B5B'];
+
+/* ---------- icons ---------- */
+const P={
+cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+users:'<circle cx="9" cy="8.5" r="3.5"/><path d="M2.8 20c.6-3.6 3.2-5.5 6.2-5.5s5.6 1.9 6.2 5.5M15.5 5.3a3.5 3.5 0 0 1 0 6.4M17.5 14.8c2 .7 3.3 2.4 3.7 5.2"/>',
+kassa:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+chart:'<path d="M4 20V11M10 20V5M16 20v-7M21 20H3"/>',
+more:'<rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+left:'<path d="M15 5l-7 7 7 7"/>',right:'<path d="M9 5l7 7-7 7"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/>',phone:'<path d="M6.5 3.5h3l1.5 4-2 1.3a11 11 0 0 0 6.2 6.2l1.3-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2z"/>',
+chat:'<path d="M4 19.5l1.3-3.9A8 8 0 1 1 8.6 18.6z"/>',drop:'<path d="M12 3.5c3.5 4.2 6 7.6 6 10.6a6 6 0 0 1-12 0c0-3 2.5-6.4 6-10.6z"/>',
+gift:'<rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7.5h14v-7.5M12 8.5V20M12 8.5c-1.5-3.5-5.5-4-5.5-1.5S12 8.5 12 8.5zm0 0c1.5-3.5 5.5-4 5.5-1.5S12 8.5 12 8.5z"/>',
+card:'<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h3"/>',box:'<path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v9"/>',
+bell:'<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.5l2.1 1.2M17.7 15.3l2.1 1.2M4.2 16.5l2.1-1.2M17.7 8.7l2.1-1.2"/><circle cx="12" cy="12" r="7"/>',
+scissors:'<circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M8.2 8.2L20 18M8.2 15.8L20 6"/>',team:'<circle cx="8" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M2.5 19c.5-3 2.7-4.7 5.5-4.7s5 1.7 5.5 4.7M14 14.6c2.8-.6 6.3.6 7 4.4"/>',
+save:'<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M4.5 19.5h15"/>',clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+alert:'<path d="M12 4l9 15.5H3z"/><path d="M12 10v4M12 17v.5"/>',arrive:'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.3 2.3 4.7-5"/>',
+noshow:'<circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/>',repeat:'<path d="M4 11V9a3 3 0 0 1 3-3h12l-3-3M20 13v2a3 3 0 0 1-3 3H5l3 3"/>',
+spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/>',copy:'<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
+cake:'<path d="M4 20.5h16M5 20.5v-7h14v7M5 16.5c2 1.3 3.5 1.3 5 0s3.5-1.3 5 0 3 1.3 4 0M12 13.5V10M12 7.5c-1-1-1-2 0-3.5 1 1.5 1 2.5 0 3.5z"/>',
+edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',trash:'<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',camera:'<path d="M4 8.5h3.5L9 6h6l1.5 2.5H20v11H4z"/><circle cx="12" cy="13.5" r="3.5"/>'
+};
+const ic=(n,cls='')=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+const MARK=`<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="var(--ink)"/><path d="M24 15v34" stroke="var(--bg)" stroke-width="5" stroke-linecap="round"/><path d="M42 18c-9 3-14 8-17 14 5-1 11 2 13 8 1.5 4.5 4.5 7.5 9 8" fill="none" stroke="var(--bg)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="46" cy="16" r="3.2" fill="var(--accent)"/></svg>`;
+
+/* ---------- store ---------- */
+const ITEM=['clients','services','products','colorcards','vouchers','punchcards'];
+const BUCKET=['appts','sales'];
+const emptyData=()=>{const o={settings:null};[...ITEM,...BUCKET].forEach(t=>o[t]={});return o};
+const S={mode:'local',data:emptyData(),demo:null,base:null,sync:'local',route:{tab:'agenda',stack:[]},day:today(),staffFilter:'all',repPeriod:'maand',repOffset:0,clientFilter:'alle',q:''};
+const D=()=>S.demo||S.data;
+const all=t=>Object.values(D()[t]||{});
+const get=(t,id)=>id?D()[t][id]:null;
+const ST=()=>D().settings||defaultSettings();
+const monthOf=o=>(o.date||today()).slice(0,7);
+const CACHE='kitoko-cache-v1';
+function cacheLocal(){try{const c=clone(S.data);Object.values(c.colorcards).forEach(x=>{if(x.photos&&x.photos.length)x.photos=[]});if(c.settings)delete c.settings.cover;localStorage.setItem(CACHE,JSON.stringify(c))}catch(e){}}
+function loadLocal(){try{const c=JSON.parse(localStorage.getItem(CACHE)||'null');if(c&&typeof c==='object'){const e=emptyData();for(const k in e)if(c[k]!=null)e[k]=c[k];S.data=e}}catch(e){}}
+const Q={};
+function queueWrite(key,fn){const q=Q[key]||(Q[key]={busy:false,next:null});q.next=fn;if(!q.busy)runQ(key)}
+async function runQ(key){const q=Q[key];q.busy=true;while(q.next){const fn=q.next;q.next=null;let tries=0;for(;;){try{await fn();setSync('ok');break}catch(e){tries++;const code=e&&e.code;if(code==='unavailable'&&tries<2){await new Promise(r=>setTimeout(r,600+Math.random()*900));continue}console.warn('write',key,e);if(code==='quota_exceeded')toast('Opslag is vol: verwijder oude gegevens of maak een backup.');else if(code==='invalid_argument'&&String(e.message||'').includes('256'))toast('Te groot om op te slaan (foto te zwaar?)');setSync('err');break}}}q.busy=false}
+function writeBucket(t,m){queueWrite('b/'+t+'/'+m,()=>{const items={};for(const o of Object.values(S.data[t]))if(monthOf(o)===m)items[o.id]=o;const ref=S.base.collection(t).doc(m);return Object.keys(items).length?ref.set({items:clone(items)}):ref.delete()})}
+function save(t,o){const d=D();const prev=d[t][o.id];d[t][o.id]=o;if(!QUIET)o.updatedAt=Date.now();else if(!o.updatedAt)o.updatedAt=Date.now()-5000;render();if(S.demo)return;cacheLocal();if(t==='appts'&&!QUIET)scheduleSync();if(S.mode!=='cloud')return;
+  if(BUCKET.includes(t)){const m=monthOf(o);writeBucket(t,m);if(prev&&monthOf(prev)!==m)writeBucket(t,monthOf(prev))}
+  else queueWrite('c/'+t+'/'+o.id,()=>S.base.collection(t).doc(o.id).set(clone(o)))}
+function remove(t,id){const d=D();const prev=d[t][id];if(!prev)return;delete d[t][id];render();if(S.demo)return;if(t==='appts'&&!QUIET&&prev.extId&&prev.extSource!=='ics'&&ST().gcal&&ST().gcal.on){const s=clone(ST());s.gcal.pendingDel=[...(s.gcal.pendingDel||[]),prev.extId];QUIET=true;saveSettings(s);QUIET=false;scheduleSync()}cacheLocal();if(S.mode!=='cloud')return;
+  if(BUCKET.includes(t))writeBucket(t,monthOf(prev));else queueWrite('c/'+t+'/'+id,()=>S.base.collection(t).doc(id).delete())}
+function saveSettings(s){const d=D();d.settings=s;render();if(S.demo)return;cacheLocal();if(S.mode==='cloud')queueWrite('settings',()=>S.base.set({settings:clone(s)}))}
+async function uploadAll(){if(!S.base)return;await S.base.set({settings:clone(S.data.settings)});for(const t of ITEM)for(const o of Object.values(S.data[t]))await S.base.collection(t).doc(o.id).set(clone(o));for(const t of BUCKET){const ms=new Set(Object.values(S.data[t]).map(monthOf));for(const m of ms){const items={};Object.values(S.data[t]).forEach(o=>{if(monthOf(o)===m)items[o.id]=o});await S.base.collection(t).doc(m).set({items:clone(items)})}}}
+function setSync(s){if(S.sync===s)return;S.sync=s;const el=$('#syncdot');if(el){el.className='syncdot '+s;el.lastChild.textContent=syncLabel()}}
+const syncLabel=()=>({ok:'Gesynchroniseerd',local:'Alleen op dit toestel',err:'Opslaan mislukt',slow:'Verbinden…'})[S.sync]||'';
+async function connect(){
+  let tries=0;while(!(window.claude&&window.claude.use)&&tries<30){await new Promise(r=>setTimeout(r,100));tries++}
+  if(!(window.claude&&window.claude.use)){setSync('local');return}
+  let db=null,user=null;try{[db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')])}catch(e){}
+  if(!db||!user){setSync('local');return}
+  let id=null;try{id=await user.id()}catch(e){}
+  if(!id){setSync('local');return}
+  let base;try{base=db.doc('data/users/'+id+'/salon')}catch(e){setSync('local');return}
+  S.base=base;S.mode='cloud';setSync('slow');
+  try{const first=await base.get();if(!first.exists&&S.data.settings){await uploadAll();toast('Je gegevens staan nu veilig online')}}catch(e){console.warn(e)}
+  const timer=setTimeout(()=>{if(S.sync==='slow')setSync('slow')},10000);
+  base.onSnapshot(sn=>{if(!sn.metadata.fromCache){clearTimeout(timer);if(S.sync!=='err')setSync('ok')}if(sn.exists){const s=sn.data().settings;if(s)S.data.settings=clone(s)}cacheLocal();render()},e=>{clearTimeout(timer);setSync('err')});
+  for(const t of ITEM)base.collection(t).onSnapshot(qs=>{if(qs.metadata.fromCache&&qs.empty)return;const m={};qs.docs.forEach(d=>{m[d.id]=clone(d.data())});S.data[t]=m;cacheLocal();render()},e=>console.warn(t,e));
+  for(const t of BUCKET)base.collection(t).onSnapshot(qs=>{if(qs.metadata.fromCache&&qs.empty)return;const m={};qs.docs.forEach(d=>{const it=d.data().items||{};for(const k in it)m[k]=clone(it[k])});S.data[t]=m;cacheLocal();render()},e=>console.warn(t,e));
+}
+
+/* ---------- defaults ---------- */
+function defaultSettings(){return{salon:'Kitoko by Kate',owner:'Kate',vat:21,slot:15,onboarded:false,
+  hours:{1:['09:00','18:00'],2:['09:00','18:00'],3:['09:00','18:00'],4:['09:00','20:00'],5:['09:00','18:00'],6:['08:30','15:00'],0:null},
+  team:[{id:'me',name:'Kate',color:STAFF_COLORS[0]}],
+  tplReminder:'Hoi {voornaam}! Even een herinnering: je afspraak bij {salon} is op {dag} om {uur}. Kan je niet? Laat het me gerust weten. Tot dan!',
+  tplRecall:'Hoi {voornaam}! Het is alweer even geleden. Zin om je volgende afspraak bij {salon} in te plannen? Ik heb deze week nog plekjes vrij.',
+  tplBirthday:'Gelukkige verjaardag {voornaam}! Als cadeautje krijg je 10% korting op je volgende afspraak bij {salon}.',
+  tplAfter:'Bedankt voor je bezoek bij {salon}, {voornaam}! Tot de volgende keer.'}}
+const DEFAULT_SERVICES=[['Snit kort','Knippen',30,38],['Snit halflang / lang','Knippen',45,48],['Heren snit','Knippen',30,28],['Kinder snit','Knippen',20,18],['Brushing','Styling',30,32],['Opsteekkapsel','Styling',60,65],['Kleuring uitgroei','Kleuren',60,55],['Volledige kleuring','Kleuren',90,75],['Balayage','Kleuren',150,135],['Mèches / highlights','Kleuren',120,95],['Toner / gloss','Kleuren',20,25],['Shampoo & massage verzorging','Verzorging',10,12],['Haarbehandeling','Verzorging',20,30]];
+function loadDefaultServices(){DEFAULT_SERVICES.forEach(([name,cat,dur,price],i)=>{const id=uid();save('services',{id,name,cat,dur,price,color:SVC_COLORS[i%SVC_COLORS.length],order:i})})}
+function tpl(t,ctx){return String(t||'').replace(/\{(\w+)\}/g,(_,k)=>ctx[k]??'')}
+
+/* ---------- demo ---------- */
+function makeDemo(){const d=emptyData();const s=defaultSettings();s.onboarded=true;d.settings=s;
+  DEFAULT_SERVICES.forEach(([name,cat,dur,price],i)=>{const id='s'+i;d.services[id]={id,name,cat,dur,price,color:SVC_COLORS[i%SVC_COLORS.length],order:i}});
+  [['Oway Volume Root Spray 160ml','Oway',41.5,22,7],['Oway Colour Protection 240ml','Oway',36,19,2],['Olaplex No.3','Olaplex',30,16,11],['K18 Mask 50ml','K18',75,41,3]].forEach(([name,brand,price,cost,stock],i)=>{const id='p'+i;d.products[id]={id,name,brand,price,cost,stock,min:3}});
+  const names=[['Veerle','Marissen','0476 33 98 56'],['Stefan','Odeurs','0486 51 32 32'],['Kathy','Vanbockryck','0473 68 24 18'],['Adriana','Bolani','0475 75 42 27'],['Anja','Remans','0494 39 98 70'],['Angelina','Moors','0486 37 70 98'],['Lotte','Claes','0471 22 31 90'],['Sara','Peeters','0498 12 77 41'],['Nina','Janssens','0472 90 11 64'],['Elif','Yilmaz','0485 41 20 36'],['Marie','Lambrechts','0477 61 08 15'],['Tom','Vos','0491 33 45 80']];
+  const cids=names.map(([first,last,phone],i)=>{const id='c'+i;d.clients[id]={id,first,last,phone,email:'',city:['Tongeren','Hasselt','Bilzen','Riemst'][i%4],tags:i%3===0?['Vaste klant']:[],notes:i===3?'Houdt van rustige afspraken, koffie zonder suiker.':'',warn:i===0?'Allergisch voor PPD: alleen PPD-vrije kleuring!':'',birthday:i===2?today().slice(0,5).replace(/^\d{4}/,'1984')+'-'+pad(Math.min(28,new Date().getDate()+3)):'',credit:i===0?92.01:0,createdAt:Date.now()-i*864e5*40};return id});
+  const svcIds=Object.keys(d.services);const t=today();
+  const plan=[[0,'09:00',['s0','s11']],[0,'10:15',['s6']],[0,'11:30',['s4']],[0,'13:30',['s8']],[0,'16:30',['s2']],[1,'09:30',['s7']],[1,'11:00',['s1']],[1,'14:00',['s9','s10']],[2,'10:00',['s0']],[2,'15:00',['s4']],[3,'09:00',['s6','s11']],[-1,'10:00',['s1']],[-1,'13:00',['s7']]];
+  plan.forEach(([off,start,sv],i)=>{const id='a'+i;const date=addDays(t,off);const dur=sv.reduce((a,x)=>a+d.services[x].dur,0);d.appts[id]={id,date,start,dur,clientId:cids[i%cids.length],serviceIds:sv,staffId:'me',type:'afspraak',status:off<0?'betaald':'gepland',note:''}});
+  d.appts.blk={id:'blk',date:t,start:'12:30',dur:45,type:'blok',note:'Lunch',staffId:'me',status:'gepland',serviceIds:[]};
+  for(let k=1;k<=60;k++){if(k%7===0)continue;const n=1+((k*7)%4);for(let j=0;j<n;j++){const id='x'+k+'_'+j;const sv=svcIds[(k+j*3)%svcIds.length];const svc=d.services[sv];const lines=[{kind:'dienst',refId:sv,name:svc.name,qty:1,price:svc.price,staffId:'me'}];if((k+j)%5===0)lines.push({kind:'product',refId:'p0',name:'Oway Volume Root Spray 160ml',qty:1,price:41.5,staffId:'me'});const total=lines.reduce((a,l)=>a+l.price*l.qty,0);d.sales[id]={id,date:addDays(t,-k),time:toT(540+j*80),clientId:cids[(k+j)%cids.length],lines,discount:0,payments:[{method:(k+j)%4===0?'Cash':'Bancontact',amount:total}],total,status:'paid'}}}
+  d.colorcards.k1={id:'k1',clientId:'c3',date:addDays(t,-300),formula:'3.0 + 20 vol',dev:'20 vol 1:1',time:35,result:'Mooie dekking, uitgroei 2 cm',photos:[]};
+  d.colorcards.k2={id:'k2',clientId:'c3',date:addDays(t,-120),formula:'6N + 6M (1:1) · 9 vol',dev:'9 vol',time:30,result:'Iets warmer gewenst volgende keer',photos:[]};
+  d.colorcards.k3={id:'k3',clientId:'c0',date:addDays(t,-45),formula:'PPD-vrij 7.3 + 7.0 · 6%',dev:'6%',time:40,result:'Goed verdragen',photos:[]};
+  d.vouchers.v1={id:'v1',code:'KIT-4821',amount:50,balance:50,buyer:'Lotte Claes',date:addDays(t,-12)};
+  d.punchcards.b1={id:'b1',clientId:'c1',serviceId:'s2',name:'10 × Heren snit',total:10,used:6,price:250,date:addDays(t,-90)};
+  return d}
+
+/* ---------- domain ---------- */
+const svcName=ids=>(ids||[]).map(i=>get('services',i)?.name).filter(Boolean).join(', ');
+const svcPrice=ids=>(ids||[]).reduce((a,i)=>a+(+get('services',i)?.price||0),0);
+const apptColor=a=>a.type==='blok'?'':(get('services',(a.serviceIds||[])[0])?.color||'#D9A27E');
+const apptName=a=>a.type==='blok'?(a.note||'Geblokkeerd'):(fullName(get('clients',a.clientId))||a.clientName||'Eenmalige klant');
+const activeAppts=date=>all('appts').filter(a=>a.date===date&&a.status!=='geannuleerd');
+const openHours=date=>{const h=ST().hours[pISO(date).getDay()];return h?[toMin(h[0]),toMin(h[1])]:null};
+function clientStats(cid){const sales=all('sales').filter(s=>s.clientId===cid&&s.status==='paid');const spent=sales.reduce((a,s)=>a+s.total,0);const visits=sales.length;const last=sales.map(s=>s.date).sort().pop()||null;const next=all('appts').filter(a=>a.clientId===cid&&a.date>=today()&&a.status==='gepland').sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))[0]||null;return{sales,spent,visits,last,next,avg:visits?spent/visits:0}}
+function conflicts(date,start,dur,staffId,ignoreId){const s=toMin(start),e=s+dur;return activeAppts(date).filter(a=>a.id!==ignoreId&&(a.staffId||'me')===(staffId||'me')&&a.status!=='noshow'&&toMin(a.start)<e&&toMin(a.start)+a.dur>s)}
+function findFree(fromDate,dur,staffId,n=9){const out=[];const step=ST().slot||15;for(let i=0;i<45&&out.length<n;i++){const d=addDays(fromDate,i);const oh=openHours(d);if(!oh)continue;let t=oh[0];if(d===today())t=Math.max(t,Math.ceil(nowMin()/step)*step);for(;t+dur<=oh[1]&&out.length<n;t+=step){if(!conflicts(d,toT(t),dur,staffId).length){out.push({date:d,start:toT(t)});t+=Math.max(dur-step,0)+step*3}}}return out}
+function salesIn(a,b){return all('sales').filter(s=>s.status==='paid'&&s.date>=a&&s.date<=b)}
+
+/* ---------- ui primitives ---------- */
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400)}
+async function copyText(txt){try{await navigator.clipboard.writeText(txt);toast('Gekopieerd');return}catch(e){}const s=openSheet({title:'Kopiëren',body:b=>{b.innerHTML=`<p class="muted small">Selecteer en kopieer de tekst.</p><textarea style="min-height:260px" readonly>${esc(txt)}</textarea>`;setTimeout(()=>{const ta=$('textarea',b);ta.focus();ta.select()},350)}})}
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function spring(from,to,v0,{response=.38,damping=1}={},onUp,onDone){if(reduced){onUp(to);onDone&&onDone();return()=>{}}const k=Math.pow(2*Math.PI/response,2),c=4*Math.PI*damping/response;let x=from,v=v0,last=performance.now(),raf,stop=false;
+  const step=now=>{if(stop)return;let dt=Math.min(.032,(now-last)/1000);last=now;const sub=4;for(let i=0;i<sub;i++){const h=dt/sub;const a=-k*(x-to)-c*v;v+=a*h;x+=v*h}onUp(x);if(Math.abs(x-to)<.4&&Math.abs(v)<8){onUp(to);onDone&&onDone();return}raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step);return()=>{stop=true;cancelAnimationFrame(raf)}}
+const project=(v,d=.998)=>(v/1000)*d/(1-d);
+const sheets=[];
+function openSheet({title='',body,footer,tall=false,onClose}={}){
+  const root=document.createElement('div');root.className='sheet-root';
+  root.innerHTML=`<div class="scrim"></div><div class="sheet${tall?' tall':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="grab"><span></span></div><header class="sheet-h"><h2>${esc(title)}</h2><button class="icon-btn" data-close aria-label="Sluiten">${ic('x')}</button></header><div class="sheet-b"></div>${footer?'<div class="sheet-f"></div>':''}</div>`;
+  document.body.appendChild(root);sheets.forEach(s=>s.root.classList.add('under'));
+  const sh=$('.sheet',root),scrim=$('.scrim',root),b=$('.sheet-b',root);
+  let y=0,stopAnim=()=>{},closed=false;const H=()=>sh.offsetHeight;
+  const apply=v=>{y=v;const vis=Math.max(0,v);sh.style.transform=`translateY(${v<0?v*.25:v}px)`;scrim.style.opacity=String(Math.max(0,1-vis/H()))};
+  const api={root,body:b,close,setTitle:t=>{$('.sheet-h h2',root).textContent=t},foot:$('.sheet-f',root)};
+  if(body)body(b,api);if(footer)footer(api.foot,api);
+  requestAnimationFrame(()=>{apply(H());stopAnim=spring(H(),0,0,{response:.42,damping:1},apply)});
+  function close(v=0){if(closed)return;closed=true;stopAnim();const i=sheets.indexOf(api);if(i>=0)sheets.splice(i,1);if(sheets.length)sheets[sheets.length-1].root.classList.remove('under');api._unVV&&api._unVV();spring(y,H()+20,v,{response:.34,damping:1},apply,()=>{root.remove();onClose&&onClose()})}
+  scrim.addEventListener('click',()=>close());$('[data-close]',root).addEventListener('click',()=>close());
+  // drag to dismiss
+  let drag=null;const startDrag=e=>{if(e.button>0)return;stopAnim();drag={y0:e.clientY,base:y,hist:[[e.timeStamp,e.clientY]],id:e.pointerId,active:false}};
+  const handles=[$('.grab',root),$('.sheet-h',root)];
+  handles.forEach(h=>h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;startDrag(e);h.setPointerCapture(e.pointerId);drag.active=true}));
+  b.addEventListener('pointerdown',e=>{if(b.scrollTop<=0&&e.pointerType!=='mouse'&&!e.target.closest('input,textarea,select'))startDrag(e)});
+  const move=e=>{if(!drag||e.pointerId!==drag.id)return;const dy=e.clientY-drag.y0;if(!drag.active){if(dy>10&&b.scrollTop<=0){drag.active=true;drag.y0=e.clientY;try{b.setPointerCapture(e.pointerId)}catch(_){}}else if(Math.abs(dy)>10){drag=null;return}else return}
+    if(b.style.overflowY!=='hidden')b.style.overflowY='hidden';drag.hist.push([e.timeStamp,e.clientY]);if(drag.hist.length>6)drag.hist.shift();apply(drag.base+(e.clientY-drag.y0))};
+  const up=e=>{if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;b.style.overflowY='';if(!d.active)return;const h=d.hist;const a=h[0],z=h[h.length-1];const vel=z[0]-a[0]>0?(z[1]-a[1])/(z[0]-a[0])*1000:0;const end=y+project(vel);if(end>H()*.45)close(vel);else stopAnim=spring(y,0,vel,{response:.34,damping:.86},apply)};
+  root.addEventListener('pointermove',move,{passive:true});root.addEventListener('pointerup',up);root.addEventListener('pointercancel',up);
+  root.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  const vv=window.visualViewport;const onVV=()=>{if(!vv)return;const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);sh.style.bottom=kb+'px';sh.style.maxHeight=(vv.height-12)+'px';if(sh.classList.contains('tall'))sh.style.height=kb>0?(vv.height-12)+'px':''};if(vv){vv.addEventListener('resize',onVV);vv.addEventListener('scroll',onVV);api._unVV=()=>{vv.removeEventListener('resize',onVV);vv.removeEventListener('scroll',onVV)}}
+  b.addEventListener('focusin',e=>{if(e.target.matches('input,textarea,select'))setTimeout(()=>{try{e.target.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'})}catch(_){}},320)});
+  sheets.push(api);setTimeout(()=>{const f=$('[autofocus]',b);if(f&&matchMedia('(pointer:fine)').matches)f.focus()},380);return api}
+function confirmSheet(title,msg,okLabel,danger,cb){openSheet({title,body:(b,api)=>{b.innerHTML=`<p class="muted">${esc(msg)}</p><div class="flex mt"><button class="btn block" data-n>Annuleren</button><button class="btn block ${danger?'danger':'p'}" data-y>${esc(okLabel)}</button></div>`;$('[data-n]',b).onclick=()=>api.close();$('[data-y]',b).onclick=()=>{api.close();cb()}}})}
+function pickImage(cb,o={}){const inp=$('#fileIn');inp.value='';inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=o.max||720;let w=img.width,h=img.height;if(w>max||h>max){const s=max/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');if(o.png){x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingEnabled=false}x.drawImage(img,0,0,w,h);cb(o.png?c.toDataURL('image/png'):c.toDataURL('image/jpeg',.7))};img.src=r.result};r.readAsDataURL(f)};inp.click()}
+
+/* ---------- layout ---------- */
+const TABS=[['agenda','Agenda','cal'],['klanten','Klanten','users'],['kassa','Kassa','kassa'],['rapporten','Rapporten','chart'],['meer','Meer','more']];
+function renderTabbar(){const tb=$('#tabbar');if(!ST().onboarded&&!S.demo){tb.style.display='none';return}tb.style.display='';tb.innerHTML=TABS.map(([k,l,i])=>`<button data-a="tab" data-k="${k}" class="${S.route.tab===k?'on':''}" aria-current="${S.route.tab===k?'page':'false'}">${ic(i)}<span>${l}</span></button>`).join('')}
+function nav({title,back,right=''}){return`<div class="nav"><div class="side">${back?`<button class="back" data-a="back">${ic('left')}<span>${esc(back)}</span></button>`:`<span id="syncdot" class="syncdot ${S.sync}" style="padding-left:10px"><i></i><span>${syncLabel()}</span></span>`}</div><div class="t">${esc(title)}</div><div class="side r">${right}</div></div>`}
+let renderQ=false,lastScroll=0,touching=false,deferT=null;
+document.addEventListener('touchstart',()=>{touching=true},{passive:true,capture:true});
+const touchEnd=()=>{touching=false};document.addEventListener('touchend',touchEnd,{passive:true,capture:true});document.addEventListener('touchcancel',touchEnd,{passive:true,capture:true});
+const busyScrolling=()=>performance.now()-lastScroll<180;
+function render(force){if(renderQ)return;if(!force&&(busyScrolling()||(touching&&performance.now()-lastScroll<600))){clearTimeout(deferT);deferT=setTimeout(()=>render(),220);return}renderQ=true;requestAnimationFrame(()=>{renderQ=false;doRender()})}
+const scrollMem={};
+function doRender(){const main=$('#main');const prev=main.querySelector('.view:last-child');const scroll=prev?prev.scrollTop:0;const ae=document.activeElement;const focusId=ae&&main.contains(ae)?ae.id:null;const selS=focusId&&ae.selectionStart;
+  renderTabbar();renderDemoBar();
+  let html;if(!ST().onboarded&&!S.demo)html=viewOnboarding();else{const top=S.route.stack[S.route.stack.length-1];html=top?viewPushed(top):viewTab(S.route.tab)}
+  const key=S.route.tab+'/'+S.route.stack.map(s=>s.view+(s.id||'')).join('/');const same=main.dataset.key===key;if(!same&&main.dataset.key&&prev)scrollMem[main.dataset.key]=scroll;
+  main.innerHTML=`<div class="view${S.route.stack.length&&!same?' push':''}">${html}</div>`;main.dataset.key=key;
+  const v=main.querySelector('.view');if(same)v.scrollTop=scroll;else if(scrollMem[key]!=null&&!S.route.stack.length)v.scrollTop=scrollMem[key];else if(S.route.tab==='agenda'&&!S.route.stack.length)scrollToNow(v);
+  const n=$('.nav',v);let solid=v.scrollTop>30,tick=false;if(n)n.classList.toggle('solid',solid);
+  v.addEventListener('scroll',()=>{lastScroll=performance.now();if(tick)return;tick=true;requestAnimationFrame(()=>{tick=false;const s2=v.scrollTop>30;if(s2!==solid&&n){solid=s2;n.classList.toggle('solid',solid)}})},{passive:true});
+  if(n)$('.t',n)?.addEventListener('click',()=>v.scrollTo({top:0,behavior:reduced?'auto':'smooth'}));
+  const sen=$('#moreSentinel',v);if(sen&&'IntersectionObserver'in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();S.clientLimit=(S.clientLimit||150)+200;render(true)}},{root:v,rootMargin:'600px'});io.observe(sen)}
+  if(focusId){const el=document.getElementById(focusId);if(el){el.focus();try{el.setSelectionRange(selS,selS)}catch(e){}}}
+  $('#fab')?.remove();if((ST().onboarded||S.demo)&&!S.route.stack.length&&['agenda','klanten','kassa'].includes(S.route.tab)){const f=document.createElement('button');f.id='fab';f.className='fab';f.setAttribute('aria-label',{agenda:'Nieuwe afspraak',klanten:'Nieuwe klant',kassa:'Nieuwe rekening'}[S.route.tab]);f.innerHTML=ic('plus');f.dataset.a={agenda:'newAppt',klanten:'newClient',kassa:'newTicket'}[S.route.tab];document.body.appendChild(f)}
+  if(S.route.tab==='agenda'&&!S.route.stack.length){bindAgendaGestures(v);if(S.dayDir){const w=$('#tlWrap',v);if(w)w.classList.add(S.dayDir>0?'slide-l':'slide-r');S.dayDir=0}}
+  if(S.route.stack.length)bindEdgeBack(v)}
+function haptic(ms=8){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+function bindEdgeBack(v){let st=null;const W=()=>v.offsetWidth;const apply=x=>{v.style.transform=`translateX(${Math.max(0,x)}px)`};
+  v.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'||e.clientX>28)return;st={x:e.clientX,y:e.clientY,hist:[[e.timeStamp,e.clientX]],on:false,id:e.pointerId}});
+  v.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;if(!st.on){if(dx>10&&dx>Math.abs(dy)){st.on=true;v.classList.add('edge-shadow');try{v.setPointerCapture(e.pointerId)}catch(_){}}else if(Math.abs(dy)>10){st=null;return}else return}
+    st.hist.push([e.timeStamp,e.clientX]);if(st.hist.length>6)st.hist.shift();apply(dx)},{passive:true});
+  const end=e=>{if(!st)return;const s0=st;st=null;if(!s0.on)return;const h=s0.hist,a=h[0],z=h[h.length-1];const vel=z[0]-a[0]>0?(z[1]-a[1])/(z[0]-a[0])*1000:0;const cur=z[1]-s0.x;
+    if(cur+project(vel)>W()*.4)spring(cur,W(),vel,{response:.3,damping:1},apply,()=>{haptic();back()});else spring(cur,0,vel,{response:.32,damping:1},apply,()=>{v.style.transform='';v.classList.remove('edge-shadow')})};
+  v.addEventListener('pointerup',end);v.addEventListener('pointercancel',end)}
+function scrollToNow(v){const oh=dayRange(S.day);const t=S.day===today()?nowMin():oh[0]+60;const y=(t-oh[0])/60*76;requestAnimationFrame(()=>{const tl=$('.tl',v);if(tl)v.scrollTop=Math.max(0,tl.offsetTop+y-180)})}
+function renderDemoBar(){let b=$('#demobar');if(S.demo){if(!b){b=document.createElement('div');b.id='demobar';b.className='demo-bar';b.innerHTML=`<span>Demo · niets wordt bewaard</span><button data-a="stopDemo">Stoppen</button>`;document.body.appendChild(b)}}else b?.remove()}
+function go(tab){S.route={tab,stack:[]};try{history.replaceState(null,'','#'+tab)}catch(e){}render(true)}
+function push(view,id){S.route.stack.push({view,id});render(true)}
+function back(){S.route.stack.pop();render(true)}
+
+/* ---------- onboarding ---------- */
+function viewOnboarding(){const s=defaultSettings();return`<div class="onb">${MARK}<h1>Je salon,<br>in je broekzak.</h1><p>Agenda, klanten, kleurkaarten en kassa. Gemaakt voor één stylist, klaar voor een team later.</p>
+<div class="card" style="margin:0;padding:18px"><div class="field"><label for="ob-salon">Naam van je salon</label><input id="ob-salon" value="${esc(s.salon)}"></div><div class="field"><label for="ob-owner">Jouw naam</label><input id="ob-owner" value="${esc(s.owner)}"></div>
+<label class="flex small" style="margin:4px 0 16px"><input type="checkbox" id="ob-svc" checked style="width:20px;min-height:20px;accent-color:var(--accent)"> Start met een standaard dienstenlijst (prijzen kan je aanpassen)</label>
+<button class="btn p block" data-a="finishOnb">Aan de slag</button></div>
+<p class="small muted" style="text-align:center;margin:16px 0 0">Je huidige agenda haal je daarna binnen via Meer → Agenda koppelen.</p><button class="btn ghost block mt" data-a="startDemo">Eerst rondkijken met voorbeeldgegevens</button>
+<p class="small muted" style="text-align:center;margin-top:18px">Openingsuren en team stel je later in via Meer.</p></div>`}
+
+/* ---------- agenda ---------- */
+function dayRange(date){let mn=24*60,mx=0;for(const k in ST().hours){const h=ST().hours[k];if(h){mn=Math.min(mn,toMin(h[0]));mx=Math.max(mx,toMin(h[1]))}}if(mn>=mx){mn=540;mx=1080}activeAppts(date).forEach(a=>{mn=Math.min(mn,toMin(a.start));mx=Math.max(mx,toMin(a.start)+a.dur)});return[Math.floor(mn/60)*60,Math.ceil(mx/60)*60]}
+function viewAgenda(){const st=ST();const ws=weekStart(S.day);const team=st.team||[];
+  const week=Array.from({length:7},(_,i)=>{const d=addDays(ws,i);const n=activeAppts(d).filter(a=>a.type!=='blok').length;return`<button class="wd${d===S.day?' sel':''}${d===today()?' today':''}${openHours(d)?'':' closed'}" data-a="pickDay" data-d="${d}"><span class="l">${DSH[pISO(d).getDay()]}</span><span class="n">${pISO(d).getDate()}</span><span class="dots">${'<i></i>'.repeat(Math.min(n,4))}</span></button>`}).join('');
+  const appts=activeAppts(S.day).filter(a=>S.staffFilter==='all'||(a.staffId||'me')===S.staffFilter);const real=appts.filter(a=>a.type!=='blok');
+  const expected=real.filter(a=>a.status!=='noshow').reduce((x,a)=>x+svcPrice(a.serviceIds),0);const oh=openHours(S.day);
+  let gap='';if(oh){const free=findFree(S.day,45,S.staffFilter==='all'?'me':S.staffFilter,1)[0];if(free&&free.date===S.day)gap=` · eerste vrije plek ${free.start}`}
+  const m=pISO(S.day);const title=MON[m.getMonth()][0].toUpperCase()+MON[m.getMonth()].slice(1);
+  const staffChips=team.length>1?`<div class="chips" style="margin-bottom:10px"><button class="chip${S.staffFilter==='all'?' on':''}" data-a="staff" data-k="all">Iedereen</button>${team.map(t=>`<button class="chip${S.staffFilter===t.id?' on':''}" data-a="staff" data-k="${t.id}"><i style="width:8px;height:8px;border-radius:4px;background:${t.color}"></i>${esc(t.name)}</button>`).join('')}</div>`:'';
+  return nav({title:fmtDay(S.day),right:`<button class="btn ghost sm" data-a="today">Vandaag</button>`})+
+  `<div class="lt"><div><h1>${title}</h1><div class="sub">${esc(st.salon)}</div></div><div class="flex"><button class="icon-btn" data-a="week" data-k="-1" aria-label="Vorige week">${ic('left')}</button><button class="icon-btn" data-a="week" data-k="1" aria-label="Volgende week">${ic('right')}</button></div></div>
+  <div class="sticky-wk"><div class="week" id="weekStrip">${week}</div>${staffChips}
+  <div class="daybar"><div class="dt">${fmtDay(S.day)[0].toUpperCase()+fmtDay(S.day).slice(1)}</div>${oh?`<span class="badge">${toT(oh[0])}–${toT(oh[1])}</span>`:'<span class="badge rose">Gesloten</span>'}</div>
+  </div><div class="sumline" style="padding-top:10px">${real.length?`${real.length} afspra${real.length===1?'ak':'ken'} · ${eur0(expected)} verwacht${gap}`:(oh?'Nog niets gepland. Tik op een uur om een afspraak te maken.':'Je salon is gesloten op deze dag.')}</div>
+  <div class="tl-wrap" id="tlWrap">${timeline(appts)}</div>`}
+function timeline(appts){const[s,e]=dayRange(S.day);const H=76;const hours=[];for(let t=s;t<=e;t+=60)hours.push(`<div style="top:${(t-s)/60*H}px">${toT(t)}</div>`);const height=(e-s)/60*H;const team=ST().team||[];
+  const cols=(S.staffFilter==='all'&&team.length>1)?team.map(t=>t.id):[S.staffFilter==='all'?'me':S.staffFilter];const oh=openHours(S.day);
+  const colHtml=cols.map(cid=>{const list=appts.filter(a=>(a.staffId||'me')===cid||(cols.length===1&&S.staffFilter==='all')).sort((a,b)=>toMin(a.start)-toMin(b.start));
+    const lanes=[];list.forEach(a=>{const st=toMin(a.start);let l=lanes.findIndex(end=>end<=st);if(l<0){l=lanes.length;lanes.push(0)}lanes[l]=st+a.dur;a._lane=l});
+    const groups=list.map(a=>{const st=toMin(a.start),en=st+a.dur;const ov=list.filter(b=>toMin(b.start)<en&&toMin(b.start)+b.dur>st);return Math.max(...ov.map(b=>b._lane))+1});
+    const blocks=list.map((a,i)=>{const top=(toMin(a.start)-s)/60*H,h=Math.max(a.dur/60*H-2,30);const n=groups[i],w=100/n;const c=get('clients',a.clientId);const flags=(c&&c.warn?ic('alert'):'')+(a.status==='aangekomen'?ic('arrive'):a.status==='betaald'?ic('check'):a.status==='noshow'?ic('noshow'):'')+(a.repeat?ic('repeat'):'');
+      return`<button class="ap ${a.type==='blok'?'blok':''} ${a.status} ${h<46?'short':''}" style="top:${top}px;height:${h}px;left:calc(${a._lane*w}% + 2px);right:auto;width:calc(${w}% - 4px);--c:${apptColor(a)}" data-a="openAppt" data-id="${a.id}"><div class="tm">${a.start}–${toT(toMin(a.start)+a.dur)}</div><div class="nm">${esc(apptName(a))}</div><div class="sv">${esc(a.type==='blok'?'':svcName(a.serviceIds))}</div><span class="st">${flags}</span></button>`}).join('');
+    const closed=oh?`${oh[0]>s?`<div class="closedz" style="top:0;height:${(oh[0]-s)/60*H}px"></div>`:''}${oh[1]<e?`<div class="closedz" style="top:${(oh[1]-s)/60*H}px;bottom:0"></div>`:''}`:`<div class="closedz" style="inset:0"></div>`;
+    const tn=team.find(t=>t.id===cid);return`<div class="col" data-col="${cid}" style="height:${height}px">${cols.length>1?`<div class="col-h" style="position:absolute;top:-24px;left:0;right:0">${esc(tn?.name||'')}</div>`:''}<div class="grid"></div>${closed}<div class="ghost-slot" id="ghost-${cid}"></div>${blocks}</div>`}).join('');
+  const nowL=S.day===today()&&nowMin()>=s&&nowMin()<=e?`<div class="now" style="top:${(nowMin()-s)/60*H}px"></div>`:'';
+  return`<div class="tl" style="${cols.length>1?'margin-top:24px':''}"><div class="hours" style="height:${height}px">${hours.join('')}</div><div class="cols" id="tlCols" data-s="${s}" style="height:${height}px">${nowL}${colHtml}</div></div><div style="height:40px"></div>`}
+function bindAgendaGestures(v){const wrap=$('#tlWrap',v),cols=$('#tlCols',v),strip=$('#weekStrip',v);if(!wrap)return;
+  // tap empty slot
+  cols.addEventListener('click',e=>{if(e.target.closest('.ap'))return;const col=e.target.closest('.col');if(!col)return;const r=col.getBoundingClientRect();const s=+cols.dataset.s;const step=ST().slot||15;const m=s+Math.floor((e.clientY-r.top)/76*60/step)*step;const g=$('#ghost-'+col.dataset.col);if(g){g.style.top=((m-s)/60*76)+'px';g.style.height=(45/60*76-2)+'px';g.style.opacity='1';setTimeout(()=>g.style.opacity='0',500)}apptSheet({date:S.day,start:toT(m),staffId:col.dataset.col==='me'||!col.dataset.col?'me':col.dataset.col})});
+  // horizontal swipe to change day / week
+  const sw=(el,unit)=>{let st=null;el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;st={x:e.clientX,y:e.clientY,t:e.timeStamp,lock:null}},{passive:true});
+    el.addEventListener('pointermove',e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;if(!st.lock&&(Math.abs(dx)>10||Math.abs(dy)>10))st.lock=Math.abs(dx)>Math.abs(dy)*1.2?'x':'y';if(st.lock==='x'){el.style.transform=`translateX(${dx*.6}px)`;el.style.opacity=String(1-Math.min(.5,Math.abs(dx)/600))}},{passive:true});
+    const end=e=>{if(!st)return;const dx=e.clientX-st.x,dt=Math.max(1,e.timeStamp-st.t),vel=dx/dt;const lock=st.lock;st=null;if(lock!=='x'){el.style.transform='';return}
+      if(Math.abs(dx)>70||Math.abs(vel)>.45){const dir=dx<0?1:-1;el.style.transition='transform .18s ease-in,opacity .18s';el.style.transform=`translateX(${-dir*120}px)`;el.style.opacity='0';setTimeout(()=>{S.dayDir=dir;haptic();S.day=addDays(S.day,dir*unit);render()},140)}else{el.style.transition='transform .3s cubic-bezier(.2,.9,.3,1),opacity .3s';el.style.transform='';el.style.opacity='';setTimeout(()=>el.style.transition='',320)}};
+    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',()=>{st=null;el.style.transform='';el.style.opacity=''})};
+  sw(wrap,1);sw(strip,7)}
+
+/* appointment sheets */
+function apptDetail(id){const a=get('appts',id);if(!a)return;const c=get('clients',a.clientId);const end=toT(toMin(a.start)+a.dur);const staff=(ST().team||[]).find(t=>t.id===(a.staffId||'me'));const lastCard=c?all('colorcards').filter(k=>k.clientId===c.id).sort((x,y)=>y.date.localeCompare(x.date))[0]:null;
+  const msg=c?tpl(ST().tplReminder,{voornaam:c.first,salon:ST().salon,dag:fmtDay(a.date),uur:a.start}):'';const wa=c?waLink(c.phone,msg):'';
+  openSheet({title:a.type==='blok'?'Geblokkeerd':apptName(a),body:(b,api)=>{
+    const stBadge={gepland:'<span class="badge">Gepland</span>',aangekomen:'<span class="badge amber">Aangekomen</span>',betaald:'<span class="badge sage">Afgerekend</span>',noshow:'<span class="badge rose">No-show</span>'}[a.status]||'';
+    b.innerHTML=`${c&&c.warn?`<div class="warn mb">${ic('alert')}<span>${esc(c.warn)}</span></div>`:''}
+    <div class="card" style="margin:0 0 14px"><div class="list"><div><span class="av">${ic('clock')}</span><div class="row-main"><div class="row-t">${a.start}–${end}</div><div class="row-s">${fmtDay(a.date)} · ${a.dur} min${staff&&(ST().team||[]).length>1?' · '+esc(staff.name):''}</div></div>${stBadge}</div>
+    ${a.type!=='blok'?`<div><span class="av">${ic('scissors')}</span><div class="row-main"><div class="row-t">${esc(svcName(a.serviceIds)||'Geen dienst')}</div><div class="row-s">${eur(svcPrice(a.serviceIds))}</div></div></div>`:''}
+    ${c?`<button data-x="client"><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c))}</div><div class="row-s">${esc(c.phone||'Geen telefoonnummer')}</div></div>${ic('right','chev')}</button>`:''}
+    ${lastCard?`<div><span class="av">${ic('drop')}</span><div class="row-main"><div class="row-t">${esc(lastCard.formula)}</div><div class="row-s">Laatste kleurkaart · ${fmtShort(lastCard.date)}</div></div></div>`:''}
+    ${a.note?`<div><div class="row-main"><div class="row-s" style="white-space:normal">${esc(a.note)}</div></div></div>`:''}</div></div>
+    ${a.type!=='blok'&&a.status!=='betaald'?`<button class="btn p block" data-x="pay">${ic('kassa')} Afrekenen</button>
+    <div class="grid2 mt"><button class="btn" data-x="arrive">${ic('arrive')} ${a.status==='aangekomen'?'Niet aangekomen':'Aangekomen'}</button><button class="btn" data-x="noshow">${ic('noshow')} ${a.status==='noshow'?'Wel gekomen':'No-show'}</button></div>`:''}
+    ${a.status==='betaald'&&a.saleId?`<button class="btn block" data-x="receipt">${ic('kassa')} Bekijk afrekening</button>`:''}
+    ${wa?`<a class="btn block mt" href="${esc(wa)}" target="_blank" rel="noopener">${ic('chat')} Herinnering via WhatsApp</a>`:''}
+    <div class="grid2 mt"><button class="btn" data-x="edit">${ic('edit')} Wijzigen</button><button class="btn danger" data-x="del">${ic('trash')} Verwijderen</button></div>`;
+    b.onclick=e=>{const x=e.target.closest('[data-x]')?.dataset.x;if(!x)return;
+      if(x==='client'){api.close();push('client',c.id)}
+      if(x==='pay'){api.close();setTimeout(()=>checkout({apptId:a.id}),120)}
+      if(x==='arrive'){save('appts',{...a,status:a.status==='aangekomen'?'gepland':'aangekomen'});api.close()}
+      if(x==='noshow'){save('appts',{...a,status:a.status==='noshow'?'gepland':'noshow'});api.close();toast(a.status==='noshow'?'Terug op gepland':'Gemarkeerd als no-show')}
+      if(x==='edit'){api.close();setTimeout(()=>apptSheet(a),120)}
+      if(x==='receipt'){const sale=get('sales',a.saleId);if(sale)receiptSheet(sale)}
+      if(x==='del'){const group=a.repeat?all('appts').filter(o=>o.repeat===a.repeat&&o.date>=a.date):[a];confirmSheet('Afspraak verwijderen?',group.length>1?`Ook de ${group.length-1} volgende herhalingen verwijderen.`:'Dit kan je niet ongedaan maken.','Verwijderen',true,()=>{group.forEach(o=>remove('appts',o.id));api.close();toast('Verwijderd')})}}}})}
+function apptSheet(init={}){const st=ST();const editing=!!init.id;const f={type:'afspraak',date:S.day,start:'10:00',serviceIds:[],staffId:'me',note:'',clientId:null,clientName:'',repeatEvery:0,repeatCount:4,dur:null,...clone(init)};
+  const svcs=all('services').sort((a,b)=>(a.order??99)-(b.order??99));
+  openSheet({title:editing?'Afspraak wijzigen':'Nieuwe afspraak',tall:true,body:(b,api)=>{
+    const dur=()=>f.type==='blok'?(f.dur||60):(f.dur!=null&&f.durManual?f.dur:Math.max(15,f.serviceIds.reduce((a,i)=>a+(+get('services',i)?.dur||0),0)||30));
+    const draw=()=>{const c=get('clients',f.clientId);const cf=conflicts(f.date,f.start,dur(),f.staffId,f.id);const cats=[...new Set(svcs.map(s=>s.cat||'Diensten'))];
+      b.innerHTML=`<div class="seg mb"><button class="${f.type==='afspraak'?'on':''}" data-t="afspraak">Afspraak</button><button class="${f.type==='blok'?'on':''}" data-t="blok">Blok / pauze</button></div>
+      ${f.type==='afspraak'?`<div class="field"><label>Klant</label>${c?`<div class="card" style="margin:0"><div class="list"><div><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c))}</div><div class="row-s">${esc(c.phone||'')}</div></div><button class="btn sm" data-x="clearClient">Wijzig</button></div></div></div>${c.warn?`<div class="warn mt">${ic('alert')}<span>${esc(c.warn)}</span></div>`:''}`:
+        f.clientName&&f.oneoff?`<div class="flex"><input value="${esc(f.clientName)}" id="ap-oneoff" placeholder="Naam"><button class="btn sm" data-x="clearClient">Wijzig</button></div>`:
+        `<div class="search" style="margin:0"><svg class="i" viewBox="0 0 24 24">${P.search}</svg><input id="ap-cq" placeholder="Zoek of maak klant…" autocomplete="off" value="${esc(f.cq||'')}"></div><div id="ap-cres" class="card" style="margin:8px 0 0"></div>`}</div>
+      <div class="field"><label>Diensten <span class="muted">· ${dur()} min · ${eur(svcPrice(f.serviceIds))}</span></label>${svcs.length?cats.map(cat=>`<div class="small muted" style="margin:8px 0 6px">${esc(cat)}</div><div class="pick">${svcs.filter(s=>(s.cat||'Diensten')===cat).map(s=>`<button class="${f.serviceIds.includes(s.id)?'on':''}" data-s="${s.id}"><span>${esc(s.name)}</span><small>${s.dur} min · ${eur(s.price)}</small></button>`).join('')}</div>`).join(''):`<div class="note">Nog geen diensten. Voeg ze toe via Meer → Diensten.</div>`}</div>`:
+      `<div class="field"><label for="ap-note">Omschrijving</label><input id="ap-note" value="${esc(f.note)}" placeholder="Lunch, opleiding, vrij…"></div>`}
+      <div class="grid2"><div class="field"><label for="ap-date">Datum</label><input type="date" id="ap-date" value="${f.date}"></div><div class="field"><label for="ap-start">Tijdstip</label><input type="time" id="ap-start" step="${(st.slot||15)*60}" value="${f.start}"></div></div>
+      <div class="grid2"><div class="field"><label for="ap-dur">Duur (min)</label><input type="number" inputmode="numeric" id="ap-dur" min="5" step="5" value="${dur()}"></div>${(st.team||[]).length>1?`<div class="field"><label for="ap-staff">Medewerker</label><select id="ap-staff">${st.team.map(t=>`<option value="${t.id}" ${t.id===f.staffId?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>`:'<div></div>'}</div>
+      ${cf.length?`<div class="warn mb">${ic('alert')}<span>Overlapt met ${esc(apptName(cf[0]))} om ${cf[0].start}</span></div>`:''}
+      <button class="btn block mb" data-x="free">${ic('search')} Vind een vrij moment</button><div id="ap-free" class="mb"></div>
+      ${!editing?`<div class="field"><label for="ap-rep">Herhalen</label><div class="grid2"><select id="ap-rep"><option value="0">Niet herhalen</option>${[1,2,3,4,5,6,8,10,12].map(w=>`<option value="${w}" ${+f.repeatEvery===w?'selected':''}>Elke ${w===1?'week':w+' weken'}</option>`).join('')}</select><select id="ap-repn" ${+f.repeatEvery?'':'disabled'}>${[2,3,4,5,6,8,10,12].map(n=>`<option value="${n}" ${+f.repeatCount===n?'selected':''}>${n} keer</option>`).join('')}</select></div></div>`:''}
+      ${f.type==='afspraak'?`<div class="field"><label for="ap-note">Notitie</label><textarea id="ap-note" placeholder="Bv. wil iets korter dan vorige keer">${esc(f.note)}</textarea></div>`:''}`;
+      bindInputs();if(f.type==='afspraak'&&!c&&!f.oneoff)drawClientRes()};
+    const bindInputs=()=>{const on=(id,fn)=>{const el=$('#'+id,b);if(el)el.addEventListener('change',()=>{fn(el.value);draw()})};
+      on('ap-date',v=>f.date=v);on('ap-start',v=>f.start=v);on('ap-staff',v=>f.staffId=v);on('ap-rep',v=>f.repeatEvery=+v);on('ap-repn',v=>f.repeatCount=+v);
+      on('ap-dur',v=>{f.dur=Math.max(5,+v||30);f.durManual=true});const n=$('#ap-note',b);if(n)n.addEventListener('input',()=>f.note=n.value);const o=$('#ap-oneoff',b);if(o)o.addEventListener('input',()=>f.clientName=o.value);
+      const q=$('#ap-cq',b);if(q)q.addEventListener('input',()=>{f.cq=q.value;drawClientRes()})};
+    const drawClientRes=()=>{const box=$('#ap-cres',b);if(!box)return;const q=norm(f.cq);const res=q?all('clients').filter(c=>norm(fullName(c)+' '+c.phone).includes(q)).slice(0,5):[];
+      box.innerHTML=`<div class="list">${res.map(c=>`<button data-c="${c.id}"><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c))}</div><div class="row-s">${esc(c.phone||'')}</div></div></button>`).join('')}${q?`<button data-x="newc"><span class="av" style="color:var(--accent)">${ic('plus')}</span><div class="row-main"><div class="row-t">Nieuwe klant “${esc(f.cq)}”</div><div class="row-s">Profiel aanmaken</div></div></button><button data-x="oneoff"><span class="av">${ic('users')}</span><div class="row-main"><div class="row-t">Eenmalige klant</div><div class="row-s">Zonder profiel</div></div></button>`:`<div class="muted small">Typ een naam of telefoonnummer</div>`}</div>`};
+    b.addEventListener('click',e=>{const t=e.target.closest('[data-t]');if(t){f.type=t.dataset.t;draw();return}
+      const s=e.target.closest('[data-s]');if(s){const id=s.dataset.s;f.serviceIds=f.serviceIds.includes(id)?f.serviceIds.filter(x=>x!==id):[...f.serviceIds,id];f.durManual=false;draw();return}
+      const c=e.target.closest('[data-c]');if(c){f.clientId=c.dataset.c;f.oneoff=false;const last=all('appts').filter(a=>a.clientId===f.clientId&&a.serviceIds&&a.serviceIds.length).sort((x,y)=>y.date.localeCompare(x.date))[0];if(last&&!f.serviceIds.length)f.serviceIds=last.serviceIds.filter(i=>get('services',i));draw();return}
+      const sl=e.target.closest('[data-slot]');if(sl){const[d,t2]=sl.dataset.slot.split('|');f.date=d;f.start=t2;draw();return}
+      const x=e.target.closest('[data-x]')?.dataset.x;if(!x)return;
+      if(x==='clearClient'){f.clientId=null;f.oneoff=false;f.clientName='';draw()}
+      if(x==='oneoff'){f.oneoff=true;f.clientName=f.cq||'';f.clientId=null;draw()}
+      if(x==='newc'){const parts=(f.cq||'').trim().split(/\s+/);const isPhone=/^[\d +]+$/.test(f.cq);const nc={id:uid(),first:isPhone?'':parts[0]||'',last:isPhone?'':parts.slice(1).join(' '),phone:isPhone?f.cq:'',tags:[],credit:0,createdAt:Date.now()};save('clients',nc);f.clientId=nc.id;draw();toast('Klant aangemaakt')}
+      if(x==='free'){const sl=findFree(f.date<today()?today():f.date,dur(),f.staffId);const box=$('#ap-free',b);box.innerHTML=sl.length?`<div class="slots">${sl.map(o=>`<button data-slot="${o.date}|${o.start}">${o.date===today()?'Vandaag':DSH[pISO(o.date).getDay()]+' '+pISO(o.date).getDate()+'/'+(pISO(o.date).getMonth()+1)} · ${o.start}</button>`).join('')}</div>`:'<div class="muted small">Geen vrije plek gevonden in de komende weken.</div>'}});
+    draw()},
+    footer:(ft,api)=>{ft.innerHTML=`<button class="btn block" data-n>Annuleren</button><button class="btn p block" data-y>${editing?'Opslaan':'Inplannen'}</button>`;$('[data-n]',ft).onclick=()=>api.close();
+      $('[data-y]',ft).onclick=()=>{const durV=+($('#ap-dur',api.body)?.value)||30;if(f.type==='afspraak'&&!f.clientId&&!f.clientName&&!f.cq){toast('Kies eerst een klant');return}
+        if(f.type==='afspraak'&&!f.clientId&&!f.clientName&&f.cq){f.clientName=f.cq}
+        const base={id:f.id||uid(),type:f.type,date:f.date,start:f.start,dur:durV,serviceIds:f.type==='blok'?[]:f.serviceIds,staffId:f.staffId||'me',note:f.note||'',clientId:f.type==='blok'?null:f.clientId,clientName:f.clientId?'':(f.clientName||''),status:f.status||'gepland',repeat:f.repeat||null,saleId:f.saleId||null,createdAt:f.createdAt||Date.now()};
+        if(!editing&&+f.repeatEvery){const g=uid();for(let i=0;i<f.repeatCount;i++)save('appts',{...base,id:i?uid():base.id,date:addDays(base.date,i*7*f.repeatEvery),repeat:g})}else save('appts',base);
+        S.day=base.date;api.close();haptic();if(S.route.tab!=='agenda'||S.route.stack.length){toast('Ingepland op '+fmtDay(base.date)+' om '+base.start)}else toast(editing?'Opgeslagen':'Ingepland')}}})}
+
+/* ---------- klanten ---------- */
+function viewKlanten(){const cs=all('clients');const q=norm(S.q);const now=today();const m=now.slice(5,7);
+  const lastVisit={};all('sales').forEach(s=>{if(s.status==='paid'&&s.clientId&&(!lastVisit[s.clientId]||s.date>lastVisit[s.clientId]))lastVisit[s.clientId]=s.date});
+  const filters={alle:()=>true,vast:c=>(c.tags||[]).includes('Vaste klant'),terug:c=>lastVisit[c.id]&&daysBetween(lastVisit[c.id],now)>56,jarig:c=>c.birthday&&c.birthday.slice(5,7)===m,nieuw:c=>Date.now()-(c.createdAt||0)<30*864e5};
+  let list=cs.filter(filters[S.clientFilter]||filters.alle).filter(c=>!q||norm(fullName(c)+' '+(c.phone||'')+' '+(c.email||'')+' '+(c.tags||[]).join(' ')).includes(q)).sort((a,b)=>norm(a.first+a.last).localeCompare(norm(b.first+b.last)));
+  const total=list.length;list=list.slice(0,S.clientLimit||150);let cur='';const rows=list.map(c=>{const L=(norm(c.first||c.last)[0]||'#').toUpperCase();const head=L!==cur?(cur=L,`</div></div><div class="alpha">${L}</div><div class="card"><div class="list">`):'';const lv=lastVisit[c.id];
+    return head+`<button class="cv" data-a="client" data-id="${c.id}"><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c)||'Naamloos')}${c.warn?` <span style="color:var(--rose)">${ic('alert').replace('class="i ','class="i " style="width:15px;height:15px;vertical-align:-2px" ')}</span>`:''}</div><div class="row-s">${esc(c.phone||c.email||'—')}${lv?' · laatst '+fmtShort(lv):''}</div></div>${ic('right','chev')}</button>`}).join('');
+  const chips=[['alle','Alle'],['vast','Vaste klanten'],['terug','Lang niet geweest'],['jarig','Jarig deze maand'],['nieuw','Nieuw']].map(([k,l])=>`<button class="chip${S.clientFilter===k?' on':''}" data-a="cfilter" data-k="${k}">${l}</button>`).join('');
+  return nav({title:'Klanten'})+`<div class="lt"><div><h1>Klanten</h1><div class="sub">${cs.length} klant${cs.length===1?'':'en'}</div></div></div>
+  <div class="search"><svg class="i" viewBox="0 0 24 24">${P.search}</svg><input id="cq" type="search" placeholder="Zoek op naam, telefoon of tag" value="${esc(S.q)}" autocomplete="off"></div><div class="chips mb">${chips}</div>
+  ${list.length?`<div><div>${rows}</div></div>${total>list.length?`<div class="more-sentinel" id="moreSentinel">Meer klanten laden… (${list.length} van ${total})</div>`:''}`:`<div class="empty">${ic('users')}<h3>${cs.length?'Niemand gevonden':'Nog geen klanten'}</h3><p>${cs.length?'Probeer een andere zoekterm.':'Voeg je eerste klant toe met de + knop, of importeer een lijst via Meer → Backup.'}</p></div>`}`}
+function viewClient(id){const c=get('clients',id);if(!c)return nav({title:'',back:'Klanten'})+'<div class="empty"><h3>Klant niet gevonden</h3></div>';const s=clientStats(id);const tab=S.clientTab||'overzicht';
+  const cards=all('colorcards').filter(k=>k.clientId===id).sort((a,b)=>b.date.localeCompare(a.date));const appts=all('appts').filter(a=>a.clientId===id).sort((a,b)=>(b.date+b.start).localeCompare(a.date+a.start));
+  const punch=all('punchcards').filter(p=>p.clientId===id);const prods=[];s.sales.forEach(sl=>sl.lines.filter(l=>l.kind==='product').forEach(l=>prods.push({...l,date:sl.date})));
+  const wa=waLink(c.phone,`Hoi ${c.first||''}!`);
+  const tabs=[['overzicht','Overzicht'],['kleur','Kleurkaarten'],['afspraken','Afspraken'],['afrekeningen','Afrekeningen'],['producten','Producten']];
+  let body='';
+  if(tab==='overzicht')body=`<div class="kpis"><div class="kpi"><div class="k">Bezoeken</div><div class="v">${s.visits}</div><div class="d">${s.last?'laatst '+fmtShort(s.last):'nog geen'}</div></div><div class="kpi"><div class="k">Totaal besteed</div><div class="v">${eur0(s.spent)}</div><div class="d">gem. ${eur0(s.avg)}</div></div>
+    <div class="kpi"><div class="k">Tegoed / voorschot</div><div class="v">${eur(c.credit||0)}</div><div class="d"><button class="btn ghost sm" style="padding:0;height:auto" data-a="addCredit" data-id="${id}">+ Voorschot</button></div></div><div class="kpi"><div class="k">Volgende afspraak</div><div class="v" style="font-size:19px">${s.next?fmtShort(s.next.date)+' · '+s.next.start:'—'}</div><div class="d">${s.next?esc(svcName(s.next.serviceIds)):'<button class="btn ghost sm" style="padding:0;height:auto" data-a="bookClient" data-id="'+id+'">Inplannen</button>'}</div></div></div>
+    ${punch.length?`<div class="section-t">Beurtenkaarten</div><div class="card"><div class="list">${punch.map(p=>`<div><span class="av">${ic('card')}</span><div class="row-main"><div class="row-t">${esc(p.name)}</div><div class="meter mt" style="margin-top:6px"><i style="width:${p.used/p.total*100}%"></i></div></div><div class="row-r">${p.total-p.used} over</div></div>`).join('')}</div></div>`:''}
+    <div class="section-t">Gegevens</div><div class="card"><div class="list">
+    <div><div class="row-main"><div class="row-s">Telefoon</div><div class="row-t">${esc(c.phone||'—')}</div></div>${c.phone?`<a class="btn sm" href="tel:${esc(c.phone.replace(/\s/g,''))}">${ic('phone')}</a>`:''}</div>
+    <div><div class="row-main"><div class="row-s">E-mail</div><div class="row-t">${esc(c.email||'—')}</div></div></div>
+    <div><div class="row-main"><div class="row-s">Adres</div><div class="row-t">${esc([c.street,[c.zip,c.city].filter(Boolean).join(' ')].filter(Boolean).join(', ')||'—')}</div></div></div>
+    <div><div class="row-main"><div class="row-s">Verjaardag</div><div class="row-t">${c.birthday?fmtShort(c.birthday).replace(/ \d{4}$/,''):'—'}</div></div></div>
+    ${(c.tags||[]).length?`<div><div class="row-main"><div class="row-s">Tags</div><div class="flex wrap" style="margin-top:4px">${c.tags.map(t=>`<span class="badge clay">${esc(t)}</span>`).join('')}</div></div></div>`:''}
+    <div><div class="row-main"><div class="row-s">Notities</div><div style="white-space:pre-wrap">${esc(c.notes||'—')}</div></div></div></div></div>
+    <div class="pad mt"><button class="btn block" data-a="editClient" data-id="${id}">${ic('edit')} Gegevens wijzigen</button></div>`;
+  if(tab==='kleur')body=`<div class="pad mb"><button class="btn p block" data-a="newCard" data-id="${id}">${ic('plus')} Nieuwe kleurkaart</button></div>${cards.length?cards.map(k=>`<button class="cc" style="display:block;width:calc(100% - 32px);text-align:left" data-a="editCard" data-id="${k.id}"><div class="flex between"><span class="badge clay">${fmtShort(k.date)}</span><span class="small muted">${k.time?k.time+' min':''}</span></div><div class="f">${esc(k.formula||'—')}</div><div class="small muted">${esc([k.dev&&'Oxidant '+k.dev,k.result].filter(Boolean).join(' · '))}</div>${(k.photos||[]).length?`<div class="photos">${k.photos.map(p=>`<img src="${p}" alt="Foto kleuring">`).join('')}</div>`:''}</button>`).join(''):`<div class="empty">${ic('drop')}<h3>Nog geen kleurkaarten</h3><p>Noteer formule, oxidant, inwerktijd en foto's. Je ziet de laatste formule meteen bij de afspraak.</p></div>`}`;
+  if(tab==='afspraken')body=appts.length?`<div class="card"><div class="list">${appts.map(a=>`<button data-a="openAppt" data-id="${a.id}"><div class="row-main"><div class="row-t">${esc(svcName(a.serviceIds)||'Afspraak')}</div><div class="row-s">${fmtDay(a.date)} · ${a.start}</div></div>${a.date>=today()&&a.status==='gepland'?'<span class="badge clay">Gepland</span>':a.status==='noshow'?'<span class="badge rose">No-show</span>':a.status==='betaald'?'<span class="badge sage">Betaald</span>':''}</button>`).join('')}</div></div>`:`<div class="empty"><h3>Geen afspraken</h3></div>`;
+  if(tab==='afrekeningen')body=s.sales.length?`<div class="card"><div class="list">${s.sales.sort((a,b)=>b.date.localeCompare(a.date)).map(x=>`<button data-a="receipt" data-id="${x.id}"><div class="row-main"><div class="row-t">${fmtDay(x.date)}</div><div class="row-s">${esc(x.lines.map(l=>l.name).join(', '))}</div></div><div class="row-r"><b class="num" style="color:var(--ink)">${eur(x.total)}</b><br><span class="small">${esc(x.payments.map(p=>p.method).join(' + '))}</span></div></button>`).join('')}</div></div>`:`<div class="empty"><h3>Nog geen afrekeningen</h3></div>`;
+  if(tab==='producten')body=prods.length?`<div class="card"><div class="list">${prods.sort((a,b)=>b.date.localeCompare(a.date)).map(p=>`<div><span class="av">${ic('box')}</span><div class="row-main"><div class="row-t">${esc(p.name)}</div><div class="row-s">${p.qty}× · ${fmtShort(p.date)}</div></div><div class="row-r">${eur(p.price*p.qty)}</div></div>`).join('')}</div></div>`:`<div class="empty"><h3>Nog geen producten gekocht</h3></div>`;
+  return nav({title:fullName(c),back:'Klanten',right:`<button class="icon-btn" data-a="editClient" data-id="${id}" aria-label="Wijzigen">${ic('edit')}</button>`})+
+  `<div class="hero-fiche"><span class="av lg">${initials(c)}</span><h1>${esc(fullName(c)||'Naamloos')}</h1><div class="muted small">${esc([c.city,s.visits?s.visits+' bezoeken':'Nieuwe klant'].filter(Boolean).join(' · '))}</div>
+  <div class="qa"><button data-a="bookClient" data-id="${id}">${ic('cal')}Afspraak</button><button data-a="payClient" data-id="${id}">${ic('kassa')}Afrekenen</button>${wa?`<a href="${esc(wa)}" target="_blank" rel="noopener">${ic('chat')}WhatsApp</a>`:''}<button data-a="newCard" data-id="${id}">${ic('drop')}Kleur</button></div></div>
+  ${c.warn?`<div class="pad mb"><div class="warn">${ic('alert')}<span>${esc(c.warn)}</span></div></div>`:''}
+  <div class="chips mb">${tabs.map(([k,l])=>`<button class="chip${tab===k?' on':''}" data-a="ctab" data-k="${k}">${l}${k==='kleur'&&cards.length?' '+cards.length:''}</button>`).join('')}</div>${body}`}
+function clientSheet(c0){const c={first:'',last:'',phone:'',email:'',street:'',zip:'',city:'',birthday:'',notes:'',warn:'',tags:[],credit:0,...clone(c0||{})};const isNew=!c.id;
+  openSheet({title:isNew?'Nieuwe klant':'Klant wijzigen',tall:true,body:b=>{b.innerHTML=`<div class="grid2"><div class="field"><label for="cl-first">Voornaam</label><input id="cl-first" value="${esc(c.first)}" autocomplete="off" autofocus></div><div class="field"><label for="cl-last">Familienaam</label><input id="cl-last" value="${esc(c.last)}" autocomplete="off"></div></div>
+    <div class="field"><label for="cl-phone">GSM</label><input id="cl-phone" type="tel" inputmode="tel" value="${esc(c.phone)}" placeholder="0470 12 34 56"></div><div class="field"><label for="cl-email">E-mail</label><input id="cl-email" type="email" inputmode="email" value="${esc(c.email)}"></div>
+    <div class="field"><label for="cl-street">Straat en nr</label><input id="cl-street" value="${esc(c.street)}"></div><div class="grid2"><div class="field"><label for="cl-zip">Postcode</label><input id="cl-zip" inputmode="numeric" value="${esc(c.zip)}"></div><div class="field"><label for="cl-city">Gemeente</label><input id="cl-city" value="${esc(c.city)}"></div></div>
+    <div class="field"><label for="cl-bday">Verjaardag</label><input id="cl-bday" type="date" value="${esc(c.birthday)}"></div>
+    <div class="field"><label for="cl-warn">Belangrijke melding <span class="muted">(allergie, gevoelige hoofdhuid…)</span></label><input id="cl-warn" value="${esc(c.warn)}" placeholder="Wordt in het rood getoond bij elke afspraak"></div>
+    <div class="field"><label for="cl-tags">Tags <span class="muted">(komma's)</span></label><input id="cl-tags" value="${esc((c.tags||[]).join(', '))}" placeholder="Vaste klant, Krullen"></div>
+    <div class="field"><label for="cl-notes">Notities</label><textarea id="cl-notes">${esc(c.notes)}</textarea></div>
+    ${!isNew?`<button class="btn danger block" data-del>${ic('trash')} Klant verwijderen</button>`:''}`;
+    $('[data-del]',b)?.addEventListener('click',()=>confirmSheet('Klant verwijderen?','Afspraken en afrekeningen blijven bewaard, het profiel en de kleurkaarten verdwijnen.','Verwijderen',true,()=>{all('colorcards').filter(k=>k.clientId===c.id).forEach(k=>remove('colorcards',k.id));remove('clients',c.id);sheets.forEach(s=>s.close());S.route.stack=[];render();toast('Klant verwijderd')}))},
+  footer:(ft,api)=>{ft.innerHTML=`<button class="btn block" data-n>Annuleren</button><button class="btn p block" data-y>Bewaren</button>`;$('[data-n]',ft).onclick=()=>api.close();$('[data-y]',ft).onclick=()=>{const v=k=>$('#cl-'+k,api.body).value.trim();
+    const o={...c,id:c.id||uid(),first:v('first'),last:v('last'),phone:v('phone'),email:v('email'),street:v('street'),zip:v('zip'),city:v('city'),birthday:v('bday'),warn:v('warn'),notes:$('#cl-notes',api.body).value,tags:v('tags').split(',').map(s=>s.trim()).filter(Boolean),createdAt:c.createdAt||Date.now()};
+    if(!o.first&&!o.last&&!o.phone){toast('Vul minstens een naam in');return}save('clients',o);api.close();if(isNew){S.route.tab='klanten';S.route.stack=[{view:'client',id:o.id}];render()}toast('Bewaard')}}})}
+function cardSheet(clientId,k0){const k={date:today(),formula:'',dev:'',time:'',result:'',photos:[],...clone(k0||{})};const isNew=!k.id;
+  openSheet({title:isNew?'Nieuwe kleurkaart':'Kleurkaart',tall:true,body:b=>{const draw=()=>{b.innerHTML=`<div class="field"><label for="k-date">Datum</label><input type="date" id="k-date" value="${k.date}"></div>
+    <div class="field"><label for="k-f">Formule</label><textarea id="k-f" placeholder="bv. 6N + 6M (1:1) · 30 g" style="min-height:70px">${esc(k.formula)}</textarea></div>
+    <div class="grid2"><div class="field"><label for="k-dev">Oxidant</label><input id="k-dev" value="${esc(k.dev)}" placeholder="20 vol / 6%"></div><div class="field"><label for="k-time">Inwerktijd (min)</label><input id="k-time" type="number" inputmode="numeric" value="${esc(k.time)}"></div></div>
+    <div class="field"><label for="k-res">Resultaat / opmerking</label><textarea id="k-res" placeholder="Hoe viel het uit? Wat volgende keer anders?">${esc(k.result)}</textarea></div>
+    <div class="field"><label>Foto's voor / na</label><div class="photos">${k.photos.map((p,i)=>`<div style="position:relative"><img src="${p}" alt="Foto ${i+1}"><button class="icon-btn" data-rm="${i}" style="position:absolute;top:2px;right:2px;width:30px;height:30px;background:rgba(0,0,0,.5);color:#fff" aria-label="Foto verwijderen">${ic('x')}</button></div>`).join('')}${k.photos.length<3?`<button data-ph style="width:88px;height:110px;border-radius:10px;border:1.5px dashed var(--line2);display:grid;place-items:center;color:var(--ink2);flex:none">${ic('camera')}</button>`:''}</div></div>
+    ${!isNew?`<button class="btn danger block" data-del>${ic('trash')} Verwijderen</button>`:''}`};draw();
+    const sync=()=>{const g=id=>$('#'+id,b)?.value??'';k.date=g('k-date')||k.date;k.formula=g('k-f');k.dev=g('k-dev');k.time=g('k-time');k.result=g('k-res')};
+    b.addEventListener('click',e=>{if(e.target.closest('[data-ph]')){sync();pickImage(d=>{k.photos.push(d);draw()})}const rm=e.target.closest('[data-rm]');if(rm){sync();k.photos.splice(+rm.dataset.rm,1);draw()}
+      if(e.target.closest('[data-del]'))confirmSheet('Kleurkaart verwijderen?','','Verwijderen',true,()=>{remove('colorcards',k.id);sheets.forEach(s=>s.close())})});b._sync=sync},
+  footer:(ft,api)=>{ft.innerHTML=`<button class="btn block" data-n>Annuleren</button><button class="btn p block" data-y>Bewaren</button>`;$('[data-n]',ft).onclick=()=>api.close();$('[data-y]',ft).onclick=()=>{api.body._sync();save('colorcards',{...k,id:k.id||uid(),clientId});api.close();toast('Kleurkaart bewaard')}}})}
+
+/* ---------- kassa ---------- */
+function viewKassa(){const t=today();const todays=activeAppts(t).filter(a=>a.type!=='blok'&&!['betaald','noshow','voltooid'].includes(a.status)).sort((a,b)=>a.start.localeCompare(b.start));
+  const open=all('sales').filter(s=>s.status==='open').sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));const paid=salesIn(t,t).sort((a,b)=>b.time.localeCompare(a.time));const tot=paid.reduce((a,s)=>a+s.total,0);
+  const byM={};paid.forEach(s=>s.payments.forEach(p=>byM[p.method]=(byM[p.method]||0)+p.amount));
+  return nav({title:'Kassa'})+`<div class="lt"><div><h1>Kassa</h1><div class="sub">${fmtDay(t)}</div></div></div>
+  <div class="kpis"><div class="kpi hero"><div class="k">Omzet vandaag</div><div class="v">${eur(tot)}</div><div class="d">${paid.length} afrekening${paid.length===1?'':'en'}${Object.keys(byM).length?' · '+Object.entries(byM).map(([m,v])=>m+' '+eur0(v)).join(' · '):''}</div></div></div>
+  <div class="pad mt flex"><button class="btn block" data-a="newTicket">${ic('users')} Klant zoeken</button><button class="btn block" data-a="oneoffTicket">${ic('plus')} Eenmalige klant</button></div>
+  <div class="pad mt"><button class="btn block ${(ST().qrs||[]).length?'p':''}" data-a="qrQuick">${ic('card')} Toon betaal-QR</button></div>
+  ${open.length?`<div class="section-t">Open rekeningen</div><div class="card"><div class="list">${open.map(s=>{const c=get('clients',s.clientId);return`<button data-a="openTicket" data-id="${s.id}"><span class="av">${c?initials(c):ic('users')}</span><div class="row-main"><div class="row-t">${esc(c?fullName(c):s.clientName||'Eenmalige klant')}</div><div class="row-s">${esc(s.lines.map(l=>l.name).join(', ')||'Leeg')}</div></div><div class="row-r num">${eur(s.lines.reduce((a,l)=>a+l.qty*l.price,0))}</div></button>`}).join('')}</div></div>`:''}
+  <div class="section-t">Klaar om af te rekenen</div>${todays.length?`<div class="card"><div class="list">${todays.map(a=>`<button data-a="payAppt" data-id="${a.id}"><span class="av">${a.clientId?initials(get('clients',a.clientId)):ic('users')}</span><div class="row-main"><div class="row-t">${esc(apptName(a))}</div><div class="row-s">${a.start} · ${esc(svcName(a.serviceIds)||'—')}</div></div><div class="row-r"><span class="num">${eur(svcPrice(a.serviceIds))}</span>${a.status==='aangekomen'?'<br><span class="badge amber">Aangekomen</span>':''}</div></button>`).join('')}</div></div>`:`<div class="card" style="padding:16px"><span class="muted">Alle afspraken van vandaag zijn afgerekend.</span></div>`}
+  ${paid.length?`<div class="section-t">Afgerekend vandaag</div><div class="card"><div class="list">${paid.map(s=>{const c=get('clients',s.clientId);return`<button data-a="receipt" data-id="${s.id}"><span class="av" style="background:var(--sage-soft);color:var(--sage)">${ic('check')}</span><div class="row-main"><div class="row-t">${esc(c?fullName(c):s.clientName||'Eenmalige klant')}</div><div class="row-s">${s.time} · ${esc(s.payments.map(p=>p.method).join(' + '))}</div></div><div class="row-r num"><b style="color:var(--ink)">${eur(s.total)}</b></div></button>`}).join('')}</div></div>`:''}
+  <p class="small muted" style="padding:18px 20px 0">Kasticket ter info. Dit is geen geregistreerd kassasysteem (GKS); dat is in België voorlopig enkel verplicht voor horeca. Vraag je boekhouder bij twijfel.</p>`}
+function pickClient(cb,title='Klant kiezen'){openSheet({title,tall:true,body:(b,api)=>{b.innerHTML=`<div class="search" style="margin:0 0 10px"><svg class="i" viewBox="0 0 24 24">${P.search}</svg><input id="pc-q" placeholder="Zoek klant" autocomplete="off" autofocus></div><div id="pc-res" class="card" style="margin:0"></div>`;
+  const draw=()=>{const q=norm($('#pc-q',b).value);const res=all('clients').filter(c=>!q||norm(fullName(c)+' '+c.phone).includes(q)).sort((x,y)=>norm(x.first).localeCompare(norm(y.first))).slice(0,40);$('#pc-res',b).innerHTML=`<div class="list">${res.map(c=>`<button data-c="${c.id}"><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c))}</div><div class="row-s">${esc(c.phone||'')}${c.credit>0?' · tegoed '+eur(c.credit):''}</div></div></button>`).join('')||'<div class="muted">Geen klanten gevonden</div>'}</div>`};
+  $('#pc-q',b).addEventListener('input',draw);draw();b.addEventListener('click',e=>{const c=e.target.closest('[data-c]');if(c){api.close();setTimeout(()=>cb(c.dataset.c),100)}})}})}
+function checkout({apptId,clientId,saleId,clientName,lines}={}){const st=ST();let T;
+  if(saleId){T=clone(get('sales',saleId))}else{const a=apptId?get('appts',apptId):null;const cid=a?a.clientId:clientId;T={id:uid(),date:today(),time:toT(nowMin()),clientId:cid||null,clientName:a?a.clientName:(clientName||''),apptId:apptId||null,lines:(a?a.serviceIds:[]).map(i=>{const s=get('services',i);return s?{kind:'dienst',refId:s.id,name:s.name,qty:1,price:+s.price,staffId:a.staffId||'me'}:null}).filter(Boolean),discount:0,discType:'eur',status:'open',payments:[]};if(lines)T.lines.push(...lines)}
+  T.useCredit=T.useCredit||0;T.voucher=T.voucher||null;T.punch=T.punch||null;let method='Bancontact',split=false,cashIn='';
+  const sub=()=>T.lines.reduce((a,l)=>a+l.qty*l.price,0);const disc=()=>T.discType==='pct'?sub()*(+T.discount||0)/100:(+T.discount||0);
+  const punchVal=()=>{if(!T.punch)return 0;const l=T.lines.find(l=>l.kind==='dienst'&&l.refId===T.punch.serviceId);return l?l.price:0};
+  const total=()=>r2(Math.max(0,sub()-disc()));const due=()=>r2(Math.max(0,total()-punchVal()-(T.useCredit||0)-(T.voucher?T.voucher.amount:0)));
+  openSheet({title:'Afrekenen',tall:true,body:(b,api)=>{const draw=()=>{const c=get('clients',T.clientId);const punches=c?all('punchcards').filter(p=>p.clientId===c.id&&p.used<p.total&&T.lines.some(l=>l.kind==='dienst'&&l.refId===p.serviceId)):[];
+    const vat=r2(total()-total()/(1+(st.vat||21)/100));
+    b.innerHTML=`${c?`<div class="flex mb"><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c))}</div><div class="row-s">${c.credit>0?'Tegoed '+eur(c.credit):'Geen tegoed'}</div></div><button class="btn sm" data-x="client">Wijzig</button></div>${c.warn?`<div class="warn mb">${ic('alert')}<span>${esc(c.warn)}</span></div>`:''}`:`<div class="flex mb"><span class="av">${ic('users')}</span><div class="row-main"><input id="t-name" placeholder="Eenmalige klant" value="${esc(T.clientName||'')}"></div><button class="btn sm" data-x="client">Klant</button></div>`}
+    <div>${T.lines.map((l,i)=>`<div class="ticket-line"><div class="row-main"><div class="row-t" style="white-space:normal">${esc(l.name)}</div><div class="row-s">${{dienst:'Dienst',product:'Product',cadeaubon:'Cadeaubon',beurtenkaart:'Beurtenkaart',tegoed:'Voorschot / tegoed'}[l.kind]||''}${(st.team||[]).length>1&&l.kind==='dienst'?' · '+esc((st.team.find(t=>t.id===l.staffId)||{}).name||''):''}</div></div>
+      <div class="q"><button data-dec="${i}" aria-label="Minder">${ic('minus')}</button><span class="num" style="min-width:18px;text-align:center">${l.qty}</span><button data-inc="${i}" aria-label="Meer">${ic('plus')}</button></div><div class="pr"><input data-pr="${i}" inputmode="decimal" value="${String(r2(l.price)).replace('.',',')}" aria-label="Prijs"></div></div>`).join('')||'<div class="muted" style="padding:12px 0">Nog niets op de rekening.</div>'}</div>
+    <div class="flex wrap mt"><button class="btn sm" data-x="addSvc">${ic('plus')} Dienst</button><button class="btn sm" data-x="addProd">${ic('plus')} Product</button><button class="btn sm" data-x="addVoucher">${ic('gift')} Cadeaubon</button><button class="btn sm" data-x="addPunch">${ic('card')} Beurtenkaart</button>${c?`<button class="btn sm" data-x="addCredit">${ic('plus')} Voorschot</button>`:''}</div>
+    <div class="section-t" style="margin-left:0">Korting</div><div class="flex"><div class="seg" style="width:120px;flex:none"><button class="${T.discType==='eur'?'on':''}" data-dt="eur">€</button><button class="${T.discType==='pct'?'on':''}" data-dt="pct">%</button></div><input id="t-disc" inputmode="decimal" value="${T.discount?String(T.discount).replace('.',','):''}" placeholder="0"></div>
+    ${c&&c.credit>0||punches.length||true?`<div class="section-t" style="margin-left:0">Verrekenen</div>`:''}
+    ${c&&c.credit>0?`<label class="flex mb"><input type="checkbox" data-x="credit" ${T.useCredit?'checked':''} style="width:22px;min-height:22px;accent-color:var(--accent)"><span>Tegoed gebruiken (${eur(c.credit)})</span></label>`:''}
+    ${punches.map(p=>`<label class="flex mb"><input type="checkbox" data-punch="${p.id}" ${T.punch&&T.punch.id===p.id?'checked':''} style="width:22px;min-height:22px;accent-color:var(--accent)"><span>Beurt van “${esc(p.name)}” (${p.total-p.used} over)</span></label>`).join('')}
+    <div class="flex mb"><input id="t-vcode" placeholder="Code cadeaubon" value="${esc(T.voucher?T.voucher.code:'')}" style="text-transform:uppercase"><button class="btn sm" data-x="${T.voucher?'unVoucher':'useVoucher'}">${T.voucher?'Verwijder':'Inwisselen'}</button></div>
+    <div class="totals mt"><div class="r"><span>Subtotaal</span><span class="num">${eur(sub())}</span></div>${disc()?`<div class="r"><span>Korting</span><span class="num">− ${eur(disc())}</span></div>`:''}<div class="r"><span>Waarvan BTW ${st.vat||21}%</span><span class="num">${eur(vat)}</span></div>
+      ${punchVal()?`<div class="r"><span>Beurtenkaart</span><span class="num">− ${eur(punchVal())}</span></div>`:''}${T.useCredit?`<div class="r"><span>Tegoed</span><span class="num">− ${eur(T.useCredit)}</span></div>`:''}${T.voucher?`<div class="r"><span>Cadeaubon ${esc(T.voucher.code)}</span><span class="num">− ${eur(T.voucher.amount)}</span></div>`:''}
+      <div class="r big"><span>Te betalen</span><span class="num">${eur(due())}</span></div></div>
+    <div class="section-t" style="margin-left:0">Betaalmethode</div>
+    ${split?`<div>${['Bancontact','Cash','Payconiq','Overschrijving'].map(m=>`<div class="flex mb"><span style="width:130px">${m}</span><input data-sp="${m}" inputmode="decimal" placeholder="0,00" value="${esc((T._sp||{})[m]||'')}"></div>`).join('')}<div class="small muted">Samen: ${eur(Object.values(T._sp||{}).reduce((a,v)=>a+(parseFloat(String(v).replace(',','.'))||0),0))} van ${eur(due())}</div></div>`:
+    `<div class="pay-m">${['Bancontact','Cash','Payconiq','Overschrijving',...((st.qrs||[]).length?['QR-code']:[])].map(m=>`<button class="${method===m?'on':''}" data-m="${m}">${m}</button>`).join('')}</div>${(st.qrs||[]).length&&due()>0?`<button class="btn block mt ${method==='QR-code'||method==='Payconiq'||method==='Overschrijving'?'p':''}" data-x="qr">${ic('card')} Toon QR · ${eur(due())}</button>`:''}${method==='Cash'?`<div class="flex mt"><input id="t-cash" inputmode="decimal" placeholder="Ontvangen" value="${esc(cashIn)}"><span class="muted" style="white-space:nowrap">Terug: <b class="num" style="color:var(--ink)">${eur(Math.max(0,(parseFloat(cashIn.replace(',','.'))||0)-due()))}</b></span></div>`:''}`}
+    <button class="btn ghost sm mt" data-x="split">${split?'Eén betaalmethode':'Gesplitst betalen'}</button>`;
+    const n=$('#t-name',b);if(n)n.addEventListener('input',()=>T.clientName=n.value);const dI=$('#t-disc',b);dI.addEventListener('change',()=>{T.discount=parseFloat(dI.value.replace(',','.'))||0;draw()});
+    $$('[data-pr]',b).forEach(inp=>inp.addEventListener('change',()=>{T.lines[+inp.dataset.pr].price=parseFloat(inp.value.replace(',','.'))||0;draw()}));
+    const ci=$('#t-cash',b);if(ci)ci.addEventListener('input',()=>{cashIn=ci.value;const sp=ci.nextElementSibling.querySelector('b');sp.textContent=eur(Math.max(0,(parseFloat(cashIn.replace(',','.'))||0)-due()))});
+    $$('[data-sp]',b).forEach(inp=>inp.addEventListener('change',()=>{T._sp=T._sp||{};T._sp[inp.dataset.sp]=inp.value;draw()}));
+    $('#t-vcode',b).addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());api.draw=draw};
+    api.draw=draw;draw();
+    b.addEventListener('click',e=>{const el=e.target.closest('[data-inc],[data-dec],[data-m],[data-dt],[data-x],[data-punch]');if(!el)return;
+      if(el.dataset.inc!=null){T.lines[+el.dataset.inc].qty++;draw();return}
+      if(el.dataset.dec!=null){const l=T.lines[+el.dataset.dec];l.qty--;if(l.qty<=0)T.lines.splice(+el.dataset.dec,1);draw();return}
+      if(el.dataset.m){method=el.dataset.m;draw();return}if(el.dataset.dt){T.discType=el.dataset.dt;draw();return}
+      if(el.dataset.punch){const p=get('punchcards',el.dataset.punch);T.punch=T.punch&&T.punch.id===p.id?null:{id:p.id,serviceId:p.serviceId};draw();return}
+      const x=el.dataset.x;const c=get('clients',T.clientId);
+      if(x==='client')pickClient(id=>{T.clientId=id;T.clientName='';T.useCredit=0;T.punch=null;draw()});
+      if(x==='credit'){T.useCredit=el.checked?r2(Math.min(c.credit,Math.max(0,total()-punchVal()-(T.voucher?T.voucher.amount:0)))):0;draw()}
+      if(x==='addSvc')listPick('Dienst toevoegen',all('services').sort((a,b)=>(a.order??99)-(b.order??99)).map(s=>({id:s.id,t:s.name,s:s.dur+' min',r:eur(s.price)})),id=>{const s=get('services',id);T.lines.push({kind:'dienst',refId:id,name:s.name,qty:1,price:+s.price,staffId:'me'});draw()});
+      if(x==='addProd')listPick('Product toevoegen',all('products').map(p=>({id:p.id,t:p.name,s:(p.brand||'')+' · stock '+(p.stock??0),r:eur(p.price)})),id=>{const p=get('products',id);const ex=T.lines.find(l=>l.kind==='product'&&l.refId===id);if(ex)ex.qty++;else T.lines.push({kind:'product',refId:id,name:p.name,qty:1,price:+p.price});draw()});
+      if(x==='addVoucher')amountSheet('Cadeaubon verkopen','Bedrag van de bon',v=>{T.lines.push({kind:'cadeaubon',name:'Cadeaubon '+eur(v),qty:1,price:v});draw()});
+      if(x==='addCredit')amountSheet('Voorschot','Bedrag dat bij de klant als tegoed komt',v=>{T.lines.push({kind:'tegoed',name:'Voorschot',qty:1,price:v});draw()});
+      if(x==='addPunch')listPick('Beurtenkaart verkopen',all('services').map(s=>({id:s.id,t:'10 × '+s.name,s:'1 beurt gratis',r:eur(s.price*9)})),id=>{const s=get('services',id);T.lines.push({kind:'beurtenkaart',refId:id,name:'10 × '+s.name,qty:1,price:r2(s.price*9),count:10});draw()});
+      if(x==='useVoucher'){const code=$('#t-vcode',b).value.trim().toUpperCase();const v=all('vouchers').find(v=>v.code.toUpperCase()===code);if(!v){toast('Cadeaubon niet gevonden');return}if(v.balance<=0){toast('Deze bon is opgebruikt');return}T.voucher={id:v.id,code:v.code,amount:r2(Math.min(v.balance,Math.max(0,total()-punchVal()-(T.useCredit||0))))};draw()}
+      if(x==='unVoucher'){T.voucher=null;draw()}
+      if(x==='split'){split=!split;draw()}
+      if(x==='qr'){if(!['QR-code','Payconiq','Overschrijving'].includes(method)){method='QR-code';draw()}showQR(due(),{onPaid:()=>{$('.sheet-f [data-y]',api.root)?.click()}})}});
+    api.getPay=()=>{if(split){const ps=Object.entries(T._sp||{}).map(([m,v])=>({method:m,amount:parseFloat(String(v).replace(',','.'))||0})).filter(p=>p.amount>0);return ps}return due()>0?[{method,amount:due()}]:[]};api.split=()=>split},
+  footer:(ft,api)=>{ft.innerHTML=`<button class="btn" data-o style="flex:none">Bewaar open</button><button class="btn p block" data-y>Afrekenen</button>`;
+    $('[data-o]',ft).onclick=()=>{if(!T.clientId&&!T.clientName&&!T.lines.length){api.close();return}save('sales',{...T,status:'open',total:total()});api.close();toast('Bewaard als open rekening')};
+    $('[data-y]',ft).onclick=()=>{if(!T.lines.length){toast('De rekening is leeg');return}const pays=api.getPay();const paidSum=pays.reduce((a,p)=>a+p.amount,0);if(api.split()&&Math.abs(paidSum-due())>.009){toast('Bedragen kloppen niet: '+eur(paidSum)+' van '+eur(due()));return}
+      const extras=[];if(T.useCredit)extras.push({method:'Tegoed',amount:T.useCredit});if(T.voucher)extras.push({method:'Cadeaubon',amount:T.voucher.amount});if(punchVal())extras.push({method:'Beurtenkaart',amount:punchVal()});
+      const sale={...T,status:'paid',date:T.date||today(),time:T.time||toT(nowMin()),total:total(),discountAmount:r2(disc()),payments:[...pays,...extras]};delete sale._sp;
+      // side effects
+      const c=get('clients',T.clientId);let credit=c?(+c.credit||0):0;
+      T.lines.forEach(l=>{if(l.kind==='product'){const p=get('products',l.refId);if(p)save('products',{...p,stock:(+p.stock||0)-l.qty})}
+        if(l.kind==='cadeaubon'){for(let i=0;i<l.qty;i++){const code='KIT-'+Math.floor(1000+Math.random()*9000);save('vouchers',{id:uid(),code,amount:l.price,balance:l.price,buyer:c?fullName(c):(T.clientName||''),date:today()});l.code=code}}
+        if(l.kind==='beurtenkaart'&&c){save('punchcards',{id:uid(),clientId:c.id,serviceId:l.refId,name:l.name,total:l.count||10,used:0,price:l.price,date:today()})}
+        if(l.kind==='tegoed')credit+=l.price*l.qty});
+      if(T.useCredit)credit-=T.useCredit;if(c&&credit!==(+c.credit||0))save('clients',{...c,credit:r2(credit)});
+      if(T.voucher){const v=get('vouchers',T.voucher.id);if(v)save('vouchers',{...v,balance:r2(v.balance-T.voucher.amount)})}
+      if(T.punch){const p=get('punchcards',T.punch.id);if(p)save('punchcards',{...p,used:p.used+1})}
+      save('sales',sale);if(T.apptId){const a=get('appts',T.apptId);if(a)save('appts',{...a,status:'betaald',saleId:sale.id})}
+      api.close();haptic(14);setTimeout(()=>doneSheet(sale),140)}}})}
+function listPick(title,items,cb){openSheet({title,tall:items.length>6,body:(b,api)=>{b.innerHTML=items.length?`${items.length>8?`<div class="search" style="margin:0 0 10px"><svg class="i" viewBox="0 0 24 24">${P.search}</svg><input id="lp-q" placeholder="Zoeken" autocomplete="off"></div>`:''}<div class="card" style="margin:0"><div class="list" id="lp-l"></div></div>`:'<div class="empty"><h3>Nog niets toegevoegd</h3><p>Voeg dit eerst toe via Meer.</p></div>';
+  const draw=q=>{const l=$('#lp-l',b);if(!l)return;l.innerHTML=items.filter(i=>!q||norm(i.t+' '+i.s).includes(norm(q))).map(i=>`<button data-i="${i.id}"><div class="row-main"><div class="row-t">${esc(i.t)}</div><div class="row-s">${esc(i.s||'')}</div></div><div class="row-r">${esc(i.r||'')}</div></button>`).join('')};draw('');$('#lp-q',b)?.addEventListener('input',e=>draw(e.target.value));
+  b.addEventListener('click',e=>{const i=e.target.closest('[data-i]');if(i){api.close();cb(i.dataset.i)}})}})}
+function amountSheet(title,label,cb,init='',optional=false){openSheet({title,body:(b,api)=>{b.innerHTML=`<div class="field"><label for="am">${esc(label)}</label><input id="am" inputmode="decimal" placeholder="0,00" value="${esc(init)}" autofocus style="font-size:22px;font-weight:600"></div><div class="flex mb wrap">${[25,50,75,100].map(v=>`<button class="chip" data-v="${v}">${eur0(v)}</button>`).join('')}</div><button class="btn p block" data-y>${optional?'Toon QR':'Toevoegen'}</button>`;
+  b.addEventListener('click',e=>{const v=e.target.closest('[data-v]');if(v)$('#am',b).value=v.dataset.v;if(e.target.closest('[data-y]')){const n=parseFloat($('#am',b).value.replace(',','.'));if(!(n>0)){if(optional){api.close();cb(null);return}toast('Vul een bedrag in');return}api.close();cb(r2(n))}})}})}
+function receiptText(s){const st=ST();const c=get('clients',s.clientId);const L=[st.salon.toUpperCase(),fmtDay(s.date)+' '+s.time,c?fullName(c):(s.clientName||'Eenmalige klant'),'------------------------------'];s.lines.forEach(l=>L.push(`${l.qty}x ${l.name}${l.code?' ('+l.code+')':''}`.padEnd(22)+eur(l.qty*l.price).padStart(10)));L.push('------------------------------');if(s.discountAmount)L.push('Korting'.padEnd(22)+('-'+eur(s.discountAmount)).padStart(10));L.push('TOTAAL'.padEnd(22)+eur(s.total).padStart(10));L.push(`waarvan BTW ${st.vat||21}%`.padEnd(22)+eur(s.total-s.total/(1+(st.vat||21)/100)).padStart(10));s.payments.forEach(p=>L.push(p.method.padEnd(22)+eur(p.amount).padStart(10)));L.push('','Bedankt en tot snel!');return L.join('\n')}
+function receiptSheet(s){openSheet({title:'Afrekening',body:(b,api)=>{const c=get('clients',s.clientId);b.innerHTML=`<pre style="font:13px/1.55 ui-monospace,Menlo,monospace;background:var(--surface);padding:16px;border-radius:14px;white-space:pre-wrap;box-shadow:var(--shadow)">${esc(receiptText(s))}</pre><div class="grid2 mt"><button class="btn" data-x="copy">${ic('copy')} Kopiëren</button>${c&&c.phone?`<a class="btn" target="_blank" rel="noopener" href="${esc(waLink(c.phone,receiptText(s)))}">${ic('chat')} WhatsApp</a>`:'<span></span>'}</div><button class="btn danger block mt" data-x="void">${ic('trash')} Afrekening annuleren</button>`;
+  b.addEventListener('click',e=>{const x=e.target.closest('[data-x]')?.dataset.x;if(x==='copy')copyText(receiptText(s));if(x==='void')confirmSheet('Afrekening annuleren?','De omzet verdwijnt uit je rapporten. Stock, tegoed en bonnen worden niet automatisch teruggezet.','Annuleren',true,()=>{remove('sales',s.id);if(s.apptId){const a=get('appts',s.apptId);if(a)save('appts',{...a,status:'gepland',saleId:null})}api.close();toast('Afrekening geannuleerd')})})}})}
+function doneSheet(sale){const c=get('clients',sale.clientId);const svcIds=sale.lines.filter(l=>l.kind==='dienst').map(l=>l.refId);openSheet({title:'',body:(b,api)=>{b.innerHTML=`<div style="text-align:center"><div class="check-anim"><svg class="i" viewBox="0 0 24 24">${P.check}</svg></div><div style="font:500 30px var(--f-display)">${eur(sale.total)}</div><div class="muted">${esc(sale.payments.map(p=>p.method).join(' + '))}${c?' · '+esc(fullName(c)):''}</div></div>
+  ${c&&svcIds.length?`<div class="section-t" style="margin-left:0">Meteen de volgende afspraak?</div><div class="grid3">${[4,6,8].map(w=>`<button class="btn" data-w="${w}">Over ${w} w.</button>`).join('')}</div>`:''}
+  <div class="grid2 mt"><button class="btn" data-x="copy">${ic('copy')} Kasticket</button>${c&&c.phone?`<a class="btn" target="_blank" rel="noopener" href="${esc(waLink(c.phone,tpl(ST().tplAfter,{voornaam:c.first,salon:ST().salon})))}">${ic('chat')} Bedankje</a>`:'<button class="btn" data-x="close">Sluiten</button>'}</div>`;
+  b.addEventListener('click',e=>{const w=e.target.closest('[data-w]');if(w){api.close();const d=addDays(today(),7*w.dataset.w);const free=findFree(d,svcIds.reduce((a,i)=>a+(+get('services',i)?.dur||0),0)||30,'me',1)[0];setTimeout(()=>apptSheet({clientId:c.id,serviceIds:svcIds,date:free?free.date:d,start:free?free.start:'10:00'}),150)}const x=e.target.closest('[data-x]')?.dataset.x;if(x==='copy')copyText(receiptText(sale));if(x==='close')api.close()})}})}
+
+function showQR(amount,{index=0,onPaid}={}){const qrs=ST().qrs||[];if(!qrs.length){toast('Voeg eerst je QR-code toe via Meer → Salon');return}let i=Math.min(index,qrs.length-1);
+  const ov=document.createElement('div');ov.className='qr-ov';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','Betaal-QR');
+  const draw=()=>{ov.innerHTML=`<button class="icon-btn x" data-q="close" aria-label="Sluiten">${ic('x')}</button><div style="font:500 17px var(--f-display);color:#555">${esc(ST().salon)}</div>${amount?`<div class="amt" style="margin-top:10px">${eur(amount)}</div>`:''}<img src="${qrs[i].img}" alt="QR-code om te betalen"><div style="font-weight:600;font-size:17px">Scan om te betalen</div><div style="color:#777;font-size:14px;margin-top:2px">${esc(qrs[i].name)}</div>${qrs.length>1?`<div class="tabs">${qrs.map((q,j)=>`<button class="${j===i?'on':''}" data-j="${j}">${esc(q.name)}</button>`).join('')}</div>`:''}${onPaid?`<button class="btn p" data-q="paid" style="margin-top:22px;min-width:240px">${ic('check')} Betaling ontvangen</button>`:''}<div style="color:#999;font-size:12.5px;margin-top:14px">Zet je scherm wat feller voor een vlotte scan</div>`};draw();
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('on'));haptic();
+  const close=()=>{ov.classList.remove('on');setTimeout(()=>ov.remove(),220)};
+  ov.addEventListener('click',e=>{const j=e.target.closest('[data-j]');if(j){i=+j.dataset.j;draw();return}const q=e.target.closest('[data-q]')?.dataset.q;if(q==='close')close();if(q==='paid'){close();onPaid&&onPaid()}});
+  const esc2=e=>{if(e.key==='Escape'){close();document.removeEventListener('keydown',esc2)}};document.addEventListener('keydown',esc2)}
+/* ---------- rapporten ---------- */
+function period(){const t=today();const o=S.repOffset;let a,b,label,days=[];
+  if(S.repPeriod==='dag'){a=b=addDays(t,o);label=fmtDay(a);days=[a]}
+  else if(S.repPeriod==='week'){a=addDays(weekStart(t),o*7);b=addDays(a,6);label='Week van '+fmtShort(a);for(let i=0;i<7;i++)days.push(addDays(a,i))}
+  else if(S.repPeriod==='maand'){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+o);a=iso(d);const e=new Date(d.getFullYear(),d.getMonth()+1,0);b=iso(e);label=MON[d.getMonth()]+' '+d.getFullYear();for(let x=a;x<=b;x=addDays(x,1))days.push(x)}
+  else{const y=new Date().getFullYear()+o;a=y+'-01-01';b=y+'-12-31';label=String(y)}
+  return{a,b,label,days}}
+function viewRapporten(){const st=ST();const{a,b,label,days}=period();const sales=salesIn(a,b);const tot=sales.reduce((x,s)=>x+s.total,0);
+  let svc=0,prod=0,other=0;const bySvc={},byProd={},byClient={},byMethod={};sales.forEach(s=>{const lt=s.lines.reduce((x,l)=>x+l.qty*l.price,0)||1;const f=s.total/lt;s.lines.forEach(l=>{const v=l.qty*l.price*f;if(l.kind==='dienst'){svc+=v;bySvc[l.name]=(bySvc[l.name]||0)+v}else if(l.kind==='product'){prod+=v;byProd[l.name]=(byProd[l.name]||0)+l.qty}else other+=v});if(s.clientId)byClient[s.clientId]=(byClient[s.clientId]||0)+s.total;s.payments.forEach(p=>byMethod[p.method]=(byMethod[p.method]||0)+p.amount)});
+  const ap=all('appts').filter(x=>x.date>=a&&x.date<=b&&x.type!=='blok');const ns=ap.filter(x=>x.status==='noshow').length;const booked=ap.filter(x=>x.status!=='geannuleerd'&&x.status!=='noshow').reduce((s,x)=>s+x.dur,0);
+  let openMin=0;for(let x=a;x<=b;x=addDays(x,1)){const oh=openHours(x);if(oh)openMin+=oh[1]-oh[0]}const occ=openMin?Math.min(100,Math.round(booked/openMin*100)):0;
+  const newC=all('clients').filter(c=>{const d=c.createdAt?iso(new Date(c.createdAt)):'';return d>=a&&d<=b}).length;const vat=tot-tot/(1+(st.vat||21)/100);
+  let bars='';if(S.repPeriod==='jaar'){const ms=Array(12).fill(0);sales.forEach(s=>ms[+s.date.slice(5,7)-1]+=s.total);const mx=Math.max(...ms,1);bars=ms.map((v,i)=>`<div class="b${v?'':' zero'}" title="${MSH[i]}: ${eur0(v)}"><i style="height:${v/mx*100}%"></i><span>${MSH[i][0]}</span></div>`).join('')}
+  else if(days.length>1){const vals=days.map(d=>sales.filter(s=>s.date===d).reduce((x,s)=>x+s.total,0));const mx=Math.max(...vals,1);bars=days.map((d,i)=>`<div class="b${vals[i]?'':' zero'}" title="${fmtShort(d)}: ${eur0(vals[i])}"><i style="height:${vals[i]/mx*100}%"></i><span>${days.length>8?(i%5===0?pISO(d).getDate():''):DSH[pISO(d).getDay()]}</span></div>`).join('')}
+  const top=(o,fmt)=>Object.entries(o).sort((x,y)=>y[1]-x[1]).slice(0,5);
+  return nav({title:'Rapporten'})+`<div class="lt"><div><h1>Rapporten</h1><div class="sub">${esc(label[0].toUpperCase()+label.slice(1))}</div></div><div class="flex"><button class="icon-btn" data-a="rep" data-k="-1" aria-label="Vorige">${ic('left')}</button><button class="icon-btn" data-a="rep" data-k="1" aria-label="Volgende" ${S.repOffset>=0?'disabled style="opacity:.3"':''}>${ic('right')}</button></div></div>
+  <div class="pad mb"><div class="seg">${['dag','week','maand','jaar'].map(p=>`<button class="${S.repPeriod===p?'on':''}" data-a="repP" data-k="${p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('')}</div></div>
+  <div class="kpis"><div class="kpi hero"><div class="k">Omzet</div><div class="v">${eur(tot)}</div><div class="d">${sales.length} afrekeningen · gem. ${eur(sales.length?tot/sales.length:0)} · BTW ${eur(vat)}</div></div>
+  <div class="kpi"><div class="k">Diensten</div><div class="v">${eur0(svc)}</div><div class="d">${tot?Math.round(svc/tot*100):0}% van omzet</div></div><div class="kpi"><div class="k">Producten</div><div class="v">${eur0(prod)}</div><div class="d">${tot?Math.round(prod/tot*100):0}%${other?' · bonnen '+eur0(other):''}</div></div>
+  <div class="kpi"><div class="k">Bezetting</div><div class="v">${occ}%</div><div class="meter" style="margin-top:8px"><i style="width:${occ}%"></i></div></div><div class="kpi"><div class="k">No-shows</div><div class="v">${ns}</div><div class="d">${ap.length?Math.round(ns/ap.length*100):0}% · ${newC} nieuwe klanten</div></div></div>
+  ${bars?`<div class="section-t">Verloop</div><div class="card"><div class="bars">${bars}</div><div style="height:12px"></div></div>`:''}
+  ${Object.keys(byMethod).length?`<div class="section-t">Per betaalmethode</div><div class="card"><div class="list">${top(byMethod).map(([m,v])=>`<div><div class="row-main"><div class="row-t">${esc(m)}</div></div><div class="row-r num">${eur(v)}</div></div>`).join('')}</div></div>`:''}
+  ${Object.keys(bySvc).length?`<div class="section-t">Top diensten</div><div class="card"><div class="list">${top(bySvc).map(([m,v])=>`<div><div class="row-main"><div class="row-t">${esc(m)}</div><div class="meter" style="margin-top:6px"><i style="width:${v/(top(bySvc)[0][1]||1)*100}%"></i></div></div><div class="row-r num">${eur0(v)}</div></div>`).join('')}</div></div>`:''}
+  ${Object.keys(byProd).length?`<div class="section-t">Top producten</div><div class="card"><div class="list">${top(byProd).map(([m,v])=>`<div><div class="row-main"><div class="row-t">${esc(m)}</div></div><div class="row-r">${v}×</div></div>`).join('')}</div></div>`:''}
+  ${Object.keys(byClient).length?`<div class="section-t">Beste klanten</div><div class="card"><div class="list">${top(byClient).map(([id,v])=>`<button data-a="client" data-id="${id}"><span class="av">${initials(get('clients',id))}</span><div class="row-main"><div class="row-t">${esc(fullName(get('clients',id))||'Verwijderde klant')}</div></div><div class="row-r num">${eur0(v)}</div></button>`).join('')}</div></div>`:''}
+  ${!sales.length?`<div class="empty">${ic('chart')}<h3>Nog geen omzet</h3><p>Zodra je afrekent, zie je hier je cijfers.</p></div>`:`<div class="pad mt"><button class="btn block" data-a="exportCSV">${ic('copy')} Kopieer voor boekhouder (CSV)</button></div>`}`}
+
+/* ---------- meer ---------- */
+function viewMeer(){const st=ST();const low=all('products').filter(p=>(+p.stock||0)<=(+p.min||0)).length;const tm=addDays(today(),1);const tomorrow=activeAppts(tm).filter(a=>a.type!=='blok'&&a.clientId).length;
+  const row=(a,i,t,s,r='')=>`<button data-a="${a}"><span class="av" style="background:var(--accent-soft);color:var(--accent)">${ic(i)}</span><div class="row-main"><div class="row-t">${t}</div><div class="row-s">${s}</div></div>${r}${ic('right','chev')}</button>`;
+  return nav({title:'Meer'})+`<div class="lt"><div><h1>Meer</h1><div class="sub">${esc(st.salon)}</div></div></div>
+  ${st.cover?`<div class="cover" style="background-image:url('${st.cover}')"><span>${esc(st.salon)}</span></div>`:''}
+  <div class="section-t">Klanten bereiken</div><div class="card"><div class="list">${row('pg-marketing','bell','Herinneringen & terugroepen',`${tomorrow} afspra${tomorrow===1?'ak':'ken'} morgen · via WhatsApp`)}</div></div>
+  <div class="section-t">Salon</div><div class="card"><div class="list">${row('pg-services','scissors','Diensten',all('services').length+' diensten')}${row('pg-products','box','Producten & stock',all('products').length+' producten',low?`<span class="badge rose">${low} laag</span>`:'')}${row('pg-vouchers','gift','Cadeaubonnen',all('vouchers').filter(v=>v.balance>0).length+' actief')}${row('pg-punch','card','Beurtenkaarten',all('punchcards').filter(p=>p.used<p.total).length+' actief')}</div></div>
+  <div class="section-t">Instellingen</div><div class="card"><div class="list">${row('pg-calsync','cal','Agenda koppelen',ST().gcal&&ST().gcal.on?'Google Agenda gekoppeld':'Importeer of synchroniseer je agenda')}${row('pg-settings','gear','Salon & openingsuren','Naam, uren, BTW, berichten')}${row('pg-team','team','Team',(st.team||[]).length===1?'Solo · later mensen toevoegen':(st.team||[]).length+' mensen')}${row('pg-backup','save','Backup & import','Exporteer of importeer je gegevens')}</div></div>
+  <p class="small muted" style="padding:20px;text-align:center">${S.mode==='cloud'?'Je gegevens worden privé bewaard bij je Claude-account en zijn alleen voor jou zichtbaar.':'Je gegevens staan alleen op dit toestel. Maak regelmatig een backup.'}</p>`}
+function viewPushed(top){const v=top.view;if(v==='client')return viewClient(top.id);
+  const page=(title,body,right='')=>nav({title,back:'Meer',right})+`<div class="lt"><div><h1>${esc(title)}</h1></div></div>`+body;
+  if(v==='services'){const svcs=all('services').sort((a,b)=>(a.order??99)-(b.order??99));const cats=[...new Set(svcs.map(s=>s.cat||'Diensten'))];
+    return page('Diensten',(svcs.length?cats.map(c=>`<div class="section-t">${esc(c)}</div><div class="card"><div class="list">${svcs.filter(s=>(s.cat||'Diensten')===c).map(s=>`<button data-a="editSvc" data-id="${s.id}"><span class="av" style="background:${s.color};color:#2A211C">${ic('scissors')}</span><div class="row-main"><div class="row-t">${esc(s.name)}</div><div class="row-s">${s.dur} min</div></div><div class="row-r num">${eur(s.price)}</div></button>`).join('')}</div></div>`).join(''):`<div class="empty"><h3>Nog geen diensten</h3><p>Start met de standaardlijst of voeg ze zelf toe.</p><button class="btn mt" data-a="defaultSvcs">Standaardlijst laden</button></div>`)+`<div class="pad mt"><button class="btn p block" data-a="editSvc">${ic('plus')} Dienst toevoegen</button></div>`)}
+  if(v==='products'){const ps=all('products').sort((a,b)=>a.name.localeCompare(b.name));const val=ps.reduce((a,p)=>a+(+p.cost||0)*Math.max(0,+p.stock||0),0);
+    return page('Producten',`${ps.length?`<div class="pad mb small muted">Stockwaarde (aankoop): ${eur(val)}</div><div class="card"><div class="list">${ps.map(p=>{const lowS=(+p.stock||0)<=(+p.min||0);return`<div><div class="row-main" data-a="editProd" data-id="${p.id}" style="cursor:pointer"><div class="row-t">${esc(p.name)}</div><div class="row-s">${esc(p.brand||'')} · ${eur(p.price)}</div></div><div class="q flex" style="gap:6px"><button class="icon-btn" style="width:34px;height:34px;background:var(--surface2)" data-a="stock" data-id="${p.id}" data-k="-1" aria-label="Minder">${ic('minus')}</button><span class="badge ${lowS?'rose':''} num" style="min-width:34px;justify-content:center">${p.stock??0}</span><button class="icon-btn" style="width:34px;height:34px;background:var(--surface2)" data-a="stock" data-id="${p.id}" data-k="1" aria-label="Meer">${ic('plus')}</button></div></div>`}).join('')}</div></div>`:`<div class="empty">${ic('box')}<h3>Nog geen producten</h3><p>Voeg je verkoopproducten toe. Bij afrekenen gaat de stock automatisch omlaag.</p></div>`}<div class="pad mt"><button class="btn p block" data-a="editProd">${ic('plus')} Product toevoegen</button></div>`)}
+  if(v==='vouchers'){const vs=all('vouchers').sort((a,b)=>b.date.localeCompare(a.date));return page('Cadeaubonnen',`<p class="pad small muted">Verkoop een bon via de kassa. De code wordt automatisch aangemaakt en kan bij een volgende afrekening ingewisseld worden.</p>${vs.length?`<div class="card"><div class="list">${vs.map(v=>`<div><span class="av">${ic('gift')}</span><div class="row-main"><div class="row-t">${esc(v.code)}</div><div class="row-s">${esc(v.buyer||'—')} · ${fmtShort(v.date)}</div></div><div class="row-r"><b class="num" style="color:var(--ink)">${eur(v.balance)}</b><br><span class="small">van ${eur(v.amount)}</span></div></div>`).join('')}</div></div>`:`<div class="empty"><h3>Nog geen bonnen</h3></div>`}<div class="pad mt"><button class="btn p block" data-a="sellVoucher">${ic('gift')} Cadeaubon verkopen</button></div>`)}
+  if(v==='punch'){const ps=all('punchcards');return page('Beurtenkaarten',`<p class="pad small muted">Verkoop een beurtenkaart via de kassa. Bij afrekenen van die dienst kan je een beurt aftrekken.</p>${ps.length?`<div class="card"><div class="list">${ps.map(p=>`<button data-a="client" data-id="${p.clientId}"><span class="av">${ic('card')}</span><div class="row-main"><div class="row-t">${esc(p.name)}</div><div class="row-s">${esc(fullName(get('clients',p.clientId)))}</div><div class="meter" style="margin-top:6px"><i style="width:${p.used/p.total*100}%"></i></div></div><div class="row-r">${p.total-p.used} over</div></button>`).join('')}</div></div>`:`<div class="empty"><h3>Nog geen beurtenkaarten</h3></div>`}`)}
+  if(v==='marketing')return page('Bereiken',viewMarketing());
+  if(v==='calsync')return page('Agenda koppelen',viewCalSync());
+  if(v==='settings')return page('Salon',viewSettings());
+  if(v==='team'){const t=ST().team||[];return page('Team',`<p class="pad small muted">Werk je solo? Laat het zo. Voeg later collega's toe: de agenda toont dan een kolom per persoon.</p><div class="card"><div class="list">${t.map(m=>`<button data-a="editStaff" data-id="${m.id}"><span class="av" style="background:${m.color};color:#fff">${esc((m.name||'?')[0])}</span><div class="row-main"><div class="row-t">${esc(m.name)}</div><div class="row-s">${m.id==='me'?'Eigenaar':'Medewerker'}</div></div>${ic('right','chev')}</button>`).join('')}</div></div><div class="pad mt"><button class="btn p block" data-a="editStaff">${ic('plus')} Medewerker toevoegen</button></div>`)}
+  if(v==='backup')return page('Backup',`<div class="card" style="padding:16px"><div class="row-t">Exporteren</div><p class="small muted">Kopieer al je gegevens als JSON en bewaar ze bv. in een notitie of mail aan jezelf.</p><button class="btn block" data-a="exportJSON">${ic('copy')} Kopieer backup</button></div>
+    <div class="card mt" style="padding:16px"><div class="row-t">Importeren</div><p class="small muted">Zet een backup terug (.json) of importeer klanten uit een CSV met kolommen voornaam, familienaam, gsm, email.</p><button class="btn block" data-a="importFile">${ic('save')} Bestand kiezen</button></div>
+    <div class="card mt" style="padding:16px"><div class="row-t">Over deze app</div><p class="small muted">Gebouwd als Optios-alternatief voor één stylist. Online boeken voor klanten, Frans en een betaalterminal-koppeling volgen later.</p></div>`);
+  return''}
+function viewMarketing(){const st=ST();const tm=addDays(today(),1);const appts=activeAppts(tm).filter(a=>a.type!=='blok'&&a.clientId).sort((a,b)=>a.start.localeCompare(b.start));
+  const last={};all('sales').forEach(s=>{if(s.status==='paid'&&s.clientId&&(!last[s.clientId]||s.date>last[s.clientId]))last[s.clientId]=s.date});const hasNext=new Set(all('appts').filter(a=>a.date>=today()&&a.status==='gepland').map(a=>a.clientId));
+  const recall=all('clients').filter(c=>last[c.id]&&daysBetween(last[c.id],today())>56&&!hasNext.has(c.id)).sort((a,b)=>last[a.id].localeCompare(last[b.id])).slice(0,30);
+  const m=today().slice(5,7);const bdays=all('clients').filter(c=>c.birthday&&c.birthday.slice(5,7)===m).sort((a,b)=>a.birthday.slice(8).localeCompare(b.birthday.slice(8)));
+  const row=(c,sub,msg)=>{const l=waLink(c.phone,msg);return`<div><span class="av">${initials(c)}</span><div class="row-main"><div class="row-t">${esc(fullName(c))}</div><div class="row-s">${sub}</div></div>${l?`<a class="btn sm" href="${esc(l)}" target="_blank" rel="noopener">${ic('chat')} Stuur</a>`:'<span class="small muted">geen gsm</span>'}</div>`};
+  return`<p class="pad small muted">Gratis via WhatsApp: tik op Stuur, het bericht staat al klaar. Teksten pas je aan bij Meer → Salon.</p>
+  <div class="section-t">Herinnering voor morgen · ${fmtShort(tm)}</div>${appts.length?`<div class="card"><div class="list">${appts.map(a=>{const c=get('clients',a.clientId);return c?row(c,a.start+' · '+esc(svcName(a.serviceIds)),tpl(st.tplReminder,{voornaam:c.first,salon:st.salon,dag:'morgen ('+fmtDay(tm)+')',uur:a.start})):''}).join('')}</div></div>`:`<div class="card" style="padding:16px"><span class="muted">Geen afspraken morgen.</span></div>`}
+  <div class="section-t">Lang niet geweest (8+ weken)</div>${recall.length?`<div class="card"><div class="list">${recall.map(c=>row(c,'laatst '+fmtShort(last[c.id]),tpl(st.tplRecall,{voornaam:c.first,salon:st.salon}))).join('')}</div></div>`:`<div class="card" style="padding:16px"><span class="muted">Iedereen komt netjes terug.</span></div>`}
+  <div class="section-t">Jarig deze maand</div>${bdays.length?`<div class="card"><div class="list">${bdays.map(c=>row(c,fmtShort(c.birthday).replace(/ \d{4}$/,''),tpl(st.tplBirthday,{voornaam:c.first,salon:st.salon}))).join('')}</div></div>`:`<div class="card" style="padding:16px"><span class="muted">Niemand jarig deze maand.</span></div>`}`}
+function viewSettings(){const st=ST();const days=[1,2,3,4,5,6,0];return`<div class="pad"><div class="field"><label for="s-salon">Naam salon</label><input id="s-salon" value="${esc(st.salon)}" data-set="salon"></div><div class="field"><label for="s-owner">Jouw naam</label><input id="s-owner" value="${esc(st.owner)}" data-set="owner"></div>
+  <div class="grid2"><div class="field"><label for="s-vat">BTW %</label><input id="s-vat" type="number" inputmode="decimal" value="${st.vat}" data-set="vat" data-num></div><div class="field"><label for="s-slot">Tijdsblok agenda</label><select id="s-slot" data-set="slot" data-num>${[5,10,15,30].map(n=>`<option ${+st.slot===n?'selected':''} value="${n}">${n} min</option>`).join('')}</select></div></div>
+  <div class="field"><label>Omslagfoto <span class="muted">(bv. je salon)</span></label><div class="flex"><button class="btn sm" data-a="cover">${ic('camera')} ${st.cover?'Wijzig':'Kies foto'}</button>${st.cover?'<button class="btn ghost sm" data-a="rmCover">Verwijder</button>':''}</div></div></div>
+  <div class="section-t">Openingsuren</div><div class="card"><div class="list">${days.map(d=>{const h=st.hours[d];return`<div><div class="row-main" style="flex:0 0 92px"><label class="flex"><input type="checkbox" data-day="${d}" ${h?'checked':''} style="width:20px;min-height:20px;accent-color:var(--accent)"> ${DAYS[d][0].toUpperCase()+DAYS[d].slice(1,2)}${DAYS[d].slice(2,3)}</label></div>${h?`<input type="time" data-h="${d}" data-i="0" value="${h[0]}" style="padding:8px"><span class="muted">–</span><input type="time" data-h="${d}" data-i="1" value="${h[1]}" style="padding:8px">`:'<span class="muted">Gesloten</span>'}</div>`}).join('')}</div></div>
+  <div class="section-t">Betaal-QR</div><div class="pad"><p class="small muted" style="margin-top:0">Zet hier je eigen QR-code (bv. Payconiq of je bank-app). In de kassa toon je hem met één tik, samen met het bedrag.</p>${(st.qrs||[]).length?`<div class="card" style="margin:0 0 10px"><div class="list">${st.qrs.map((q,i)=>`<div><img src="${q.img}" alt="" style="width:48px;height:48px;border-radius:8px;background:#fff;image-rendering:pixelated"><div class="row-main"><input data-qrn="${i}" value="${esc(q.name)}" aria-label="Naam QR-code" style="min-height:40px;padding:8px 10px"></div><button class="icon-btn" data-a="qrShowSet" data-k="${i}" aria-label="Toon">${ic('search')}</button><button class="icon-btn" data-a="qrDel" data-k="${i}" aria-label="Verwijder" style="color:var(--rose)">${ic('trash')}</button></div>`).join('')}</div></div>`:''}${(st.qrs||[]).length<3?`<button class="btn block" data-a="qrAdd">${ic('camera')} QR-code toevoegen</button>`:''}<p class="small muted">Tip: maak een screenshot van je QR in de Payconiq- of bank-app en kies die hier.</p></div>
+  <div class="section-t">Berichten (WhatsApp)</div><div class="pad"><p class="small muted">Gebruik {voornaam}, {salon}, {dag} en {uur}.</p>${[['tplReminder','Herinnering'],['tplRecall','Terugroepen'],['tplBirthday','Verjaardag'],['tplAfter','Na bezoek']].map(([k,l])=>`<div class="field"><label for="s-${k}">${l}</label><textarea id="s-${k}" data-set="${k}">${esc(st[k])}</textarea></div>`).join('')}</div>`}
+function svcSheet(s0){const s={name:'',cat:'Knippen',dur:30,price:0,color:SVC_COLORS[0],...clone(s0||{})};const isNew=!s.id;const cats=[...new Set(all('services').map(x=>x.cat).filter(Boolean))];
+  openSheet({title:isNew?'Nieuwe dienst':'Dienst',body:(b,api)=>{b.innerHTML=`<div class="field"><label for="sv-n">Naam</label><input id="sv-n" value="${esc(s.name)}" autofocus></div><div class="field"><label for="sv-c">Categorie</label><input id="sv-c" value="${esc(s.cat)}" list="sv-cats"><datalist id="sv-cats">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>
+    <div class="grid2"><div class="field"><label for="sv-d">Duur (min)</label><input id="sv-d" type="number" inputmode="numeric" step="5" value="${s.dur}"></div><div class="field"><label for="sv-p">Prijs (€ incl. BTW)</label><input id="sv-p" inputmode="decimal" value="${String(s.price).replace('.',',')}"></div></div>
+    <div class="field"><label>Kleur in agenda</label><div class="flex wrap">${SVC_COLORS.map(c=>`<button data-col="${c}" aria-label="Kleur" style="width:36px;height:36px;border-radius:18px;background:${c};outline:${c===s.color?'3px solid var(--ink)':'none'};outline-offset:2px"></button>`).join('')}</div></div>
+    <div class="flex mt">${!isNew?`<button class="btn danger" data-del>${ic('trash')}</button>`:''}<button class="btn p block" data-y>Bewaren</button></div>`;
+    b.addEventListener('click',e=>{const c=e.target.closest('[data-col]');if(c){s.color=c.dataset.col;$$('[data-col]',b).forEach(x=>x.style.outline=x.dataset.col===s.color?'3px solid var(--ink)':'none')}
+      if(e.target.closest('[data-del]'))confirmSheet('Dienst verwijderen?','Oude afspraken blijven bestaan.','Verwijderen',true,()=>{remove('services',s.id);api.close()});
+      if(e.target.closest('[data-y]')){const o={...s,id:s.id||uid(),name:$('#sv-n',b).value.trim(),cat:$('#sv-c',b).value.trim()||'Diensten',dur:+$('#sv-d',b).value||30,price:parseFloat($('#sv-p',b).value.replace(',','.'))||0,order:s.order??all('services').length};if(!o.name){toast('Geef de dienst een naam');return}save('services',o);api.close()}})}})}
+function prodSheet(p0){const p={name:'',brand:'',price:0,cost:0,stock:0,min:2,...clone(p0||{})};const isNew=!p.id;
+  openSheet({title:isNew?'Nieuw product':'Product',body:(b,api)=>{b.innerHTML=`<div class="field"><label for="pr-n">Naam</label><input id="pr-n" value="${esc(p.name)}" autofocus></div><div class="field"><label for="pr-b">Merk</label><input id="pr-b" value="${esc(p.brand)}"></div>
+    <div class="grid2"><div class="field"><label for="pr-p">Verkoopprijs €</label><input id="pr-p" inputmode="decimal" value="${String(p.price).replace('.',',')}"></div><div class="field"><label for="pr-c">Aankoopprijs €</label><input id="pr-c" inputmode="decimal" value="${String(p.cost).replace('.',',')}"></div></div>
+    <div class="grid2"><div class="field"><label for="pr-s">In stock</label><input id="pr-s" type="number" inputmode="numeric" value="${p.stock}"></div><div class="field"><label for="pr-m">Waarschuw onder</label><input id="pr-m" type="number" inputmode="numeric" value="${p.min}"></div></div>
+    <div class="flex mt">${!isNew?`<button class="btn danger" data-del>${ic('trash')}</button>`:''}<button class="btn p block" data-y>Bewaren</button></div>`;
+    b.addEventListener('click',e=>{if(e.target.closest('[data-del]'))confirmSheet('Product verwijderen?','','Verwijderen',true,()=>{remove('products',p.id);api.close()});
+      if(e.target.closest('[data-y]')){const n=id=>parseFloat($('#'+id,b).value.replace(',','.'))||0;const o={...p,id:p.id||uid(),name:$('#pr-n',b).value.trim(),brand:$('#pr-b',b).value.trim(),price:n('pr-p'),cost:n('pr-c'),stock:Math.round(n('pr-s')),min:Math.round(n('pr-m'))};if(!o.name){toast('Geef het product een naam');return}save('products',o);api.close()}})}})}
+function staffSheet(m0){const st=ST();const m={name:'',color:STAFF_COLORS[(st.team||[]).length%STAFF_COLORS.length],...clone(m0||{})};const isNew=!m.id;
+  openSheet({title:isNew?'Medewerker':'Medewerker wijzigen',body:(b,api)=>{b.innerHTML=`<div class="field"><label for="tm-n">Naam</label><input id="tm-n" value="${esc(m.name)}" autofocus></div><div class="flex mt">${!isNew&&m.id!=='me'?`<button class="btn danger" data-del>${ic('trash')}</button>`:''}<button class="btn p block" data-y>Bewaren</button></div>`;
+    b.addEventListener('click',e=>{if(e.target.closest('[data-del]')){const s=clone(st);s.team=s.team.filter(t=>t.id!==m.id);saveSettings(s);api.close()}
+      if(e.target.closest('[data-y]')){const name=$('#tm-n',b).value.trim();if(!name)return;const s=clone(st);s.team=s.team||[];if(isNew)s.team.push({id:uid(),name,color:m.color});else s.team=s.team.map(t=>t.id===m.id?{...t,name}:t);if(m.id==='me')s.owner=name;saveSettings(s);api.close()}})}})}
+
+/* ---------- agenda koppelen: .ics import + Google Agenda sync ---------- */
+let QUIET=false;const quietSave=(t,o)=>{QUIET=true;try{save(t,o)}finally{QUIET=false}};const quietRemove=(t,id)=>{QUIET=true;try{remove(t,id)}finally{QUIET=false}};
+const GS={busy:false,msg:'',last:null,err:null,timer:null};const GCAL='Google Calendar';
+async function getMcp(){try{return window.claude&&window.claude.use?await window.claude.use('mcp'):null}catch(e){return null}}
+function mcpMsg(e){const c=e&&e.code;return({server_not_connected:'Google Agenda is nog niet verbonden met je Claude-account. Voeg "Google Calendar" toe via claude.ai → Instellingen → Connectors.',needs_reauth:'Je Google-login is verlopen. Verbind Google Calendar opnieuw via claude.ai → Instellingen → Connectors.',not_in_manifest:'Deze app heeft nog geen toestemming voor je Google Agenda. Tik op Nu synchroniseren en kies Toestaan.',approval_required:'Toestemming nodig: tik op Nu synchroniseren en kies Toestaan.',consent_required:'Toestemming nodig: tik op Nu synchroniseren en kies Toestaan.',blocked_by_policy:'Je organisatie blokkeert Google Agenda voor deze app.',selection_required:'Kies in Claude welke Google Calendar-koppeling je wil gebruiken.',server_unavailable:'Google Agenda reageert even niet. Probeer zo opnieuw.',not_granted:'Agenda-koppeling werkt alleen in de Claude-app of op claude.ai.',capability_disabled:'Agenda-koppeling werkt alleen in de Claude-app of op claude.ai.'})[c]||('Synchroniseren mislukt'+(e&&e.message?': '+String(e.message).slice(0,120):''))}
+const tok=s=>' '+norm(s).replace(/[^a-z0-9]+/g,' ').trim()+' ';
+const SVC_KW=[['balayage','balayage'],['meche','meches'],['highlight','meches'],['uitgroei','uitgroei'],['kleur','kleuring'],['toner','toner'],['gloss','toner'],['brushing','brushing'],['brush','brushing'],['opsteek','opsteek'],['heren','heren'],['kind','kinder'],['snit','snit kort'],['knip','snit kort'],['behandeling','behandeling'],['olaplex','behandeling']];
+function interpret(summary){const t=tok(summary);const cl=all('clients').filter(c=>norm(fullName(c)).length>2).sort((a,b)=>fullName(b).length-fullName(a).length).find(c=>t.includes(tok(fullName(c))));
+  let svcs=all('services').filter(s=>s.name.length>3&&t.includes(tok(s.name))).map(s=>s.id);
+  if(!svcs.length)for(const[k,want]of SVC_KW){if(t.includes(k)){const f=all('services').find(s=>norm(s.name).includes(want));if(f){svcs=[f.id];break}}}return{cl,svcs}}
+function extractName(summary){let s=String(summary||'').split(/\s[-–—|·•:]\s|[(\[]|:/)[0]||'';SVC_KW.forEach(([k])=>{s=s.replace(new RegExp('\\b'+k+'\\w*','ig'),'')});all('services').forEach(x=>{s=s.split(x.name).join('')});s=s.replace(/\b(afspraak|klant|kapper|kapsalon|knippen)\b/ig,'').replace(/\s+/g,' ').trim();return s.length>1&&s.length<40&&!/\d{3}/.test(s)?s:null}
+function phoneFrom(txt){const m=String(txt||'').match(/(?:\+32|0032|0)\s?4\d{2}[\s./-]?\d{2}[\s./-]?\d{2}[\s./-]?\d{2}/);return m?m[0]:''}
+const nameCache={};
+function fromExternal(e,src,opt){const{cl,svcs}=interpret(e.summary);const past=e.date<today();const base={id:uid(),date:e.date,start:e.start,dur:e.dur,staffId:'me',status:past?'voltooid':'gepland',extId:e.uid||null,extSource:src,createdAt:Date.now()};
+  if(!cl&&!svcs.length&&opt.mode==='mixed')return{...base,type:'blok',note:e.summary||'Bezet',serviceIds:[]};
+  let clientId=cl?cl.id:null,clientName='';const nm=cl?null:extractName(e.summary);
+  if(!clientId&&nm){const key=norm(nm);const ex=nameCache[key]||all('clients').find(c=>norm(fullName(c))===key);if(ex)clientId=ex.id;else if(opt.createClients){const p=nm.split(' ');const c={id:uid(),first:p[0],last:p.slice(1).join(' '),phone:phoneFrom(e.desc),tags:[],credit:0,createdAt:Date.now(),source:src};quietSave('clients',c);nameCache[key]=c;clientId=c.id}else clientName=nm}
+  if(!clientId&&!clientName)clientName=e.summary||'Afspraak';
+  return{...base,type:'afspraak',clientId,clientName:clientId?'':clientName,serviceIds:svcs,note:String(e.desc||'').slice(0,400)}}
+/* ICS */
+function parseICS(txt){const lines=String(txt).replace(/\r?\n[ \t]/g,'').split(/\r?\n/);const evs=[];let cur=null;
+  for(const l of lines){if(l==='BEGIN:VEVENT'){cur={EX:[]};continue}if(l==='END:VEVENT'){if(cur)evs.push(cur);cur=null;continue}if(!cur)continue;const i=l.indexOf(':');if(i<0)continue;const[name,...ps]=l.slice(0,i).split(';');const p={};ps.forEach(x=>{const[k,v]=x.split('=');p[k]=v});const val=l.slice(i+1);if(name==='EXDATE')cur.EX.push(...val.split(','));else if(!cur[name])cur[name]={val,p}}return evs}
+const icsTxt=s=>String(s||'').replace(/\\n/gi,'\n').replace(/\\([,;\\])/g,'$1');
+function icsDate(v,p={}){if(!v)return null;if(/^\d{8}$/.test(v)||p.VALUE==='DATE')return{date:v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6,8),time:null};const m=v.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z)?$/);if(!m)return null;
+  if(m[7]){const d=new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5]));return{date:iso(d),time:toT(d.getHours()*60+d.getMinutes()),abs:d.getTime()}}return{date:`${m[1]}-${m[2]}-${m[3]}`,time:`${m[4]}:${m[5]}`}}
+function expandRule(ev,st,win){const rr=ev.RRULE&&ev.RRULE.val;if(!rr)return st.date>=win[0]&&st.date<=win[1]?[st.date]:[];const R={};rr.split(';').forEach(x=>{const[k,v]=x.split('=');R[k]=v});const iv=+R.INTERVAL||1,count=+R.COUNT||1e9;const u=R.UNTIL?icsDate(R.UNTIL).date:win[1];const end=u<win[1]?u:win[1];const ex=new Set(ev.EX.map(v=>icsDate(v)?.date));const out=[];let n=0;
+  if(R.FREQ==='WEEKLY'&&R.BYDAY){const days=R.BYDAY.split(',').map(d=>['SU','MO','TU','WE','TH','FR','SA'].indexOf(d.slice(-2)));let ws=weekStart(st.date);for(let w=0;ws<=end&&n<count&&w<800;w++,ws=addDays(ws,7*iv))for(let k=0;k<7&&n<count;k++){const d=addDays(ws,k);if(d<st.date||d>end||!days.includes(pISO(d).getDay()))continue;n++;if(!ex.has(d)&&d>=win[0])out.push(d)}}
+  else{let d=st.date;for(let i=0;d<=end&&n<count&&i<1500;i++){n++;if(!ex.has(d)&&d>=win[0])out.push(d);const x=pISO(d);if(R.FREQ==='DAILY')x.setDate(x.getDate()+iv);else if(R.FREQ==='WEEKLY')x.setDate(x.getDate()+7*iv);else if(R.FREQ==='MONTHLY')x.setMonth(x.getMonth()+iv);else if(R.FREQ==='YEARLY')x.setFullYear(x.getFullYear()+iv);else break;d=iso(x)}}return out}
+function icsToEvents(txt){const raw=parseICS(txt);const win=[addDays(today(),-365),addDays(today(),365)];const over=new Set();const out=[];let allDay=0;
+  raw.forEach(ev=>{if(ev['RECURRENCE-ID']){const r=icsDate(ev['RECURRENCE-ID'].val,ev['RECURRENCE-ID'].p);if(r)over.add((ev.UID?.val||'')+'|'+r.date)}});
+  raw.forEach(ev=>{if((ev.STATUS?.val||'')==='CANCELLED')return;const st=icsDate(ev.DTSTART?.val,ev.DTSTART?.p);if(!st)return;if(!st.time){allDay++;return}const en=icsDate(ev.DTEND?.val,ev.DTEND?.p);let dur=60;if(en&&en.time){dur=en.abs&&st.abs?Math.round((en.abs-st.abs)/6e4):(daysBetween(st.date,en.date)*1440+toMin(en.time)-toMin(st.time))}else if(ev.DURATION){const m=ev.DURATION.val.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);if(m)dur=(+m[1]||0)*60+(+m[2]||0)}dur=Math.max(5,Math.min(dur,720));
+    const uid0=ev.UID?.val||uid();const isOverride=!!ev['RECURRENCE-ID'];const dates=isOverride?(st.date>=win[0]&&st.date<=win[1]?[st.date]:[]):expandRule(ev,st,win);
+    dates.forEach(d=>{if(!isOverride&&over.has(uid0+'|'+d))return;out.push({uid:'ics:'+uid0+'|'+d,date:d,start:st.time,dur,summary:icsTxt(ev.SUMMARY?.val),desc:icsTxt(ev.DESCRIPTION?.val)})})});
+  out.sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));return{events:out,allDay}}
+function importICS(txt){const{events,allDay}=icsToEvents(txt);if(!events.length){toast(allDay?'Alleen hele-dag-items gevonden, niets te importeren':'Geen afspraken gevonden in dit bestand');return}
+  const have=new Set(all('appts').map(a=>a.extId).filter(Boolean));const fresh=events.filter(e=>!have.has(e.uid));const opt={mode:'clients',createClients:true,past:true};
+  openSheet({title:'Agenda importeren',tall:true,body:(b,api)=>{const draw=()=>{const list=fresh.filter(e=>opt.past||e.date>=today());const fut=list.filter(e=>e.date>=today()).length;const sample=list.filter(e=>e.date>=today()).slice(0,6);
+    b.innerHTML=`<div class="kpis" style="padding:0"><div class="kpi"><div class="k">Gevonden</div><div class="v">${events.length}</div><div class="d">${events.length-fresh.length?(events.length-fresh.length)+' al geïmporteerd':fmtShort(events[0].date)+' – '+fmtShort(events[events.length-1].date)}</div></div><div class="kpi"><div class="k">Komend</div><div class="v">${fut}</div><div class="d">${list.length-fut} uit het verleden</div></div></div>
+    <div class="section-t" style="margin-left:0">Wat staat er in deze agenda?</div><div class="seg"><button class="${opt.mode==='clients'?'on':''}" data-m="clients">Enkel klanten</button><button class="${opt.mode==='mixed'?'on':''}" data-m="mixed">Ook privé</button></div>
+    <p class="small muted">${opt.mode==='clients'?'Elke afspraak wordt een klantafspraak.':'Items zonder herkende klant of dienst worden een blok (bezet), zodat er niemand op geboekt wordt.'}</p>
+    <label class="flex mb"><input type="checkbox" data-o="createClients" ${opt.createClients?'checked':''} style="width:22px;min-height:22px;accent-color:var(--accent)"><span>Maak klantprofielen aan uit de namen in de titels</span></label>
+    <label class="flex mb"><input type="checkbox" data-o="past" ${opt.past?'checked':''} style="width:22px;min-height:22px;accent-color:var(--accent)"><span>Ook afspraken van het afgelopen jaar (geschiedenis per klant)</span></label>
+    ${sample.length?`<div class="section-t" style="margin-left:0">Voorbeeld</div><div class="card" style="margin:0"><div class="list">${sample.map(e=>{const{cl,svcs}=interpret(e.summary);const nm=cl?fullName(cl):extractName(e.summary);return`<div><div class="row-main"><div class="row-t">${esc(e.summary||'(geen titel)')}</div><div class="row-s">${fmtShort(e.date)} · ${e.start} · ${e.dur} min</div></div><div class="row-r small">${nm?esc(nm):opt.mode==='mixed'&&!svcs.length?'Blok':'—'}${svcs.length?'<br>'+esc(get('services',svcs[0]).name):''}</div></div>`}).join('')}</div></div>`:''}
+    ${allDay?`<p class="small muted">${allDay} hele-dag-items worden overgeslagen.</p>`:''}`};draw();
+    b.addEventListener('click',e=>{const m=e.target.closest('[data-m]');if(m){opt.mode=m.dataset.m;draw()}const o=e.target.closest('[data-o]');if(o){opt[o.dataset.o]=o.checked;draw()}});api.opt=opt},
+  footer:(ft,api)=>{ft.innerHTML=`<button class="btn block" data-n>Annuleren</button><button class="btn p block" data-y>Importeren</button>`;$('[data-n]',ft).onclick=()=>api.close();$('[data-y]',ft).onclick=()=>{const list=fresh.filter(e=>opt.past||e.date>=today());list.forEach(e=>quietSave('appts',fromExternal(e,'ics',opt)));api.close();Object.keys(nameCache).forEach(k=>delete nameCache[k]);toast(list.length+' afspraken geïmporteerd');S.day=today();go('agenda')}}})}
+function pickICS(){const inp=$('#jsonIn');inp.value='';inp.accept='.ics,text/calendar';inp.onchange=()=>{const f=inp.files[0];inp.accept='.json,application/json,.csv,text/csv';if(!f)return;const r=new FileReader();r.onload=()=>importICS(String(r.result));r.readAsText(f)};inp.click()}
+function buildICS(){const esc2=s=>String(s||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/([,;])/g,'\\$1');const dt=(d,t)=>d.replace(/-/g,'')+'T'+t.replace(':','')+'00';const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Kitoko Salon//NL','CALSCALE:GREGORIAN','X-WR-CALNAME:'+esc2(ST().salon)];
+  all('appts').filter(a=>a.date>=addDays(today(),-30)&&a.status!=='geannuleerd'&&a.extSource!=='ics').forEach(a=>{const e=toMin(a.start)+a.dur;L.push('BEGIN:VEVENT','UID:'+a.id+'@kitoko','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z','DTSTART:'+dt(a.date,a.start),'DTEND:'+dt(addDays(a.date,Math.floor(e/1440)),toT(e%1440)),'SUMMARY:'+esc2(evTitle(a)),'DESCRIPTION:'+esc2(evDesc(a)),'END:VEVENT')});L.push('END:VCALENDAR');return L.join('\r\n')}
+async function exportICS(){const txt=buildICS();try{const dl=await window.claude?.use?.('downloads');if(dl){await dl.save({filename:'kitoko-agenda.ics',data:txt});toast('Bestand klaar');return}}catch(e){if(e&&e.code==='cancelled')return}copyText(txt)}
+/* Google */
+const evTitle=a=>a.type==='blok'?(a.note||'Geblokkeerd'):apptName(a)+(svcName(a.serviceIds)?' · '+svcName(a.serviceIds):'');
+const evDesc=a=>{const c=get('clients',a.clientId);return[a.type!=='blok'&&svcName(a.serviceIds)?'Diensten: '+svcName(a.serviceIds)+' ('+eur(svcPrice(a.serviceIds))+')':'',c&&c.phone?'GSM: '+c.phone:'',c&&c.warn?'Let op: '+c.warn:'',a.type!=='blok'?a.note:'','— Kitoko Salon'].filter(Boolean).join('\n')};
+const evTime=(d,m)=>addDays(d,Math.floor(m/1440))+'T'+toT(m%1440)+':00';
+function scheduleSync(ms=2500){const g=ST().gcal;if(!g||!g.on||S.demo)return;clearTimeout(GS.timer);GS.timer=setTimeout(()=>gcalSync(),ms)}
+function gsRender(){const el=$('#gsStatus');if(el)el.innerHTML=gsLine()}
+function gsLine(){const g=ST().gcal;if(!g||!g.on)return'Niet gekoppeld';if(GS.busy)return'Bezig met synchroniseren…';if(GS.err)return`<span style="color:var(--rose)">${esc(GS.err)}</span>`;return'Gekoppeld'+(g.calName?' met '+esc(g.calName):'')+(g.last?' · laatst '+new Date(g.last).toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'}):'')+(GS.msg?' · '+esc(GS.msg):'')}
+async function gcalSync({manual=false}={}){const g0=ST().gcal;if(!g0||!g0.on||S.demo||GS.busy)return;const mcp=await getMcp();if(!mcp){GS.err=mcpMsg({code:'not_granted'});gsRender();if(manual)toast(GS.err);return}
+  GS.busy=true;GS.err=null;gsRender();const cal=g0.cal||'primary';const from=addDays(today(),-(g0.pastDays??14)),to=addDays(today(),120);let added=0,changed=0,pushed=0,removed=0;
+  try{let events=[],pt=null,pages=0;do{const r=await mcp.callTool(GCAL,'list_events',{calendarId:cal,startTime:from+'T00:00:00',endTime:to+'T23:59:00',pageSize:250,orderBy:'startTime',...(pt?{pageToken:pt}:{})},{cache:false});const p=r.payload||{};events.push(...(p.events||[]));pt=p.nextPageToken;pages++}while(pt&&pages<12);
+    const complete=!pt;const byExt={};all('appts').forEach(a=>{if(a.extId)byExt[a.extId]=a});const seen=new Set();const opt={mode:g0.mode||'clients',createClients:g0.createClients!==false};
+    for(const ev of events){if(!ev||ev.status==='cancelled'||!ev.start||!ev.start.dateTime||!ev.end)continue;if(['WORKING_LOCATION','BIRTHDAY'].includes(ev.eventType))continue;seen.add(ev.id);
+      const st=new Date(ev.start.dateTime),en=new Date(ev.end.dateTime);const date=iso(st),start=toT(st.getHours()*60+st.getMinutes()),dur=Math.max(5,Math.min(720,Math.round((en-st)/6e4)));const a=byExt[ev.id];
+      if(a){if(ev.updated!==a.extUpdated){const localDirty=(a.updatedAt||0)>(a.syncedAt||0)+2000;if(!localDirty&&(a.date!==date||a.start!==start||a.dur!==dur)){quietSave('appts',{...a,date,start,dur,extUpdated:ev.updated,syncedAt:Date.now()+3000});changed++}else if(!localDirty)quietSave('appts',{...a,extUpdated:ev.updated,syncedAt:Date.now()+3000})}continue}
+      if(/— Kitoko Salon/.test(ev.description||''))continue;
+      const twin=all('appts').find(x=>x.extSource==='ics'&&x.date===date&&x.start===start&&x.dur===dur);if(twin){quietSave('appts',{...twin,extId:ev.id,extSource:'gcal',extUpdated:ev.updated,syncedAt:Date.now()+3000});continue}
+      const ap=fromExternal({uid:ev.id,summary:ev.summary,desc:ev.description,date,start,dur},'gcal',opt);ap.extUpdated=ev.updated;ap.syncedAt=Date.now()+3000;quietSave('appts',ap);added++}
+    if(complete)for(const a of Object.values(byExt)){if(a.extSource!=='ics'&&a.date>=from&&a.date<=to&&!seen.has(a.extId)&&a.status!=='betaald'){quietRemove('appts',a.id);removed++}}
+    // push app → Google
+    let budget=40;for(const a of all('appts')){if(budget<=0)break;if(a.date<from||a.date>to||a.status==='geannuleerd'||a.extSource==='ics'||a.extSource==='gcal'&&!a.extId)continue;const s=toMin(a.start);const body={summary:evTitle(a),description:evDesc(a),startTime:evTime(a.date,s),endTime:evTime(a.date,s+a.dur)};
+      if(!a.extId){budget--;const r=await mcp.callTool(GCAL,'create_event',{calendarId:cal,...body,notificationLevel:'NONE',...(a.type==='blok'?{}:{})},{cache:false});const p=r.payload||{};const id=p.id||(p.event&&p.event.id);if(id){const cur=get('appts',a.id);if(cur)quietSave('appts',{...cur,extId:id,extSource:'kitoko',extUpdated:p.updated||null,syncedAt:Date.now()+3000});pushed++}}
+      else if((a.updatedAt||0)>(a.syncedAt||0)+2000){budget--;const r=await mcp.callTool(GCAL,'update_event',{calendarId:cal,eventId:a.extId,...body,notificationLevel:'NONE'},{cache:false});const cur=get('appts',a.id);if(cur)quietSave('appts',{...cur,extUpdated:(r.payload&&r.payload.updated)||cur.extUpdated,syncedAt:Date.now()+3000});pushed++}}
+    const g=clone(ST().gcal);for(const id of (g.pendingDel||[]).slice()){try{await mcp.callTool(GCAL,'delete_event',{calendarId:cal,eventId:id,notificationLevel:'NONE'},{cache:false})}catch(e){if(e&&e.code!=='tool_error')throw e}g.pendingDel=g.pendingDel.filter(x=>x!==id)}
+    g.last=Date.now();QUIET=true;saveSettings({...ST(),gcal:g});QUIET=false;GS.msg=[added&&added+' nieuw',changed&&changed+' gewijzigd',pushed&&pushed+' naar Google',removed&&removed+' verwijderd'].filter(Boolean).join(', ');if(manual)toast(GS.msg?'Gesynchroniseerd: '+GS.msg:'Alles is up-to-date');Object.keys(nameCache).forEach(k=>delete nameCache[k])}
+  catch(e){console.warn('gcal',e);GS.err=mcpMsg(e);if(manual)toast(GS.err);if(e&&e.retryable&&!manual)setTimeout(()=>gcalSync(),Math.max(3000,e.retryAfterMs||8000))}
+  finally{GS.busy=false;gsRender()}}
+async function gcalLink(){const mcp=await getMcp();if(!mcp){toast(mcpMsg({code:'not_granted'}));return}let cals=[];
+  try{const r=await mcp.callTool(GCAL,'list_calendars',{pageSize:100},{cache:false});cals=((r.payload||{}).calendars||(r.payload||{}).items||[]).filter(c=>!/holiday|#contacts|#weeknum/.test(c.id))}catch(e){toast(mcpMsg(e));return}
+  const opt={cal:'primary',calName:'Hoofdagenda',mode:'clients',createClients:true,pastDays:30};
+  openSheet({title:'Google Agenda koppelen',tall:true,body:(b,api)=>{const draw=()=>{b.innerHTML=`<p class="muted small">Afspraken uit je Google Agenda komen in de app, en wat je in de app inplant verschijnt in je Google Agenda. Wijzig je iets aan één kant, dan volgt de andere.</p>
+    <div class="section-t" style="margin-left:0">Welke agenda?</div><div class="card" style="margin:0"><div class="list"><button data-c="primary" data-n="Hoofdagenda"><div class="row-main"><div class="row-t">Hoofdagenda</div><div class="row-s">Je standaard Google Agenda</div></div>${opt.cal==='primary'?ic('check'):''}</button>${cals.map(c=>`<button data-c="${esc(c.id)}" data-n="${esc(c.summary)}"><div class="row-main"><div class="row-t">${esc(c.summary)}</div><div class="row-s">${esc(c.description||'')}</div></div>${opt.cal===c.id?ic('check'):''}</button>`).join('')}</div></div>
+    <div class="section-t" style="margin-left:0">Wat staat er in deze agenda?</div><div class="seg"><button class="${opt.mode==='clients'?'on':''}" data-m="clients">Enkel klanten</button><button class="${opt.mode==='mixed'?'on':''}" data-m="mixed">Ook privé</button></div><p class="small muted">${opt.mode==='clients'?'Elk item wordt een klantafspraak.':'Items zonder herkende klant of dienst worden een blok, zo boek je daar niemand.'}</p>
+    <label class="flex mb"><input type="checkbox" data-o="createClients" ${opt.createClients?'checked':''} style="width:22px;min-height:22px;accent-color:var(--accent)"><span>Maak klantprofielen aan uit de namen in de titels</span></label>
+    <div class="note">Tip: oudere afspraken (geschiedenis) haal je binnen via een export (.ics) op het vorige scherm. De koppeling houdt de laatste 30 dagen en de komende 4 maanden gelijk.</div>`};draw();
+    b.addEventListener('click',e=>{const c=e.target.closest('[data-c]');if(c){opt.cal=c.dataset.c;opt.calName=c.dataset.n;draw()}const m=e.target.closest('[data-m]');if(m){opt.mode=m.dataset.m;draw()}const o=e.target.closest('[data-o]');if(o){opt[o.dataset.o]=o.checked}})},
+  footer:(ft,api)=>{ft.innerHTML=`<button class="btn block" data-n>Annuleren</button><button class="btn p block" data-y>Koppelen</button>`;$('[data-n]',ft).onclick=()=>api.close();$('[data-y]',ft).onclick=()=>{saveSettings({...ST(),gcal:{on:true,cal:opt.cal,calName:opt.calName,mode:opt.mode,createClients:opt.createClients,pastDays:opt.pastDays,pendingDel:[],last:null}});api.close();gcalSync({manual:true})}}})}
+function viewCalSync(){const g=ST().gcal||{};const n=all('appts').filter(a=>a.extSource==='gcal'||a.extSource==='ics').length;return`<p class="pad small muted">Werk je nu met een gewone agenda? Haal alles binnen en houd beide gelijk.</p>
+  <div class="section-t">Google Agenda · live</div><div class="card" style="padding:16px"><div class="flex"><span class="av" style="background:var(--accent-soft);color:var(--accent)">${ic('repeat')}</span><div class="row-main"><div class="row-t">Twee kanten op synchroniseren</div><div class="row-s" id="gsStatus" style="white-space:normal">${gsLine()}</div></div></div>
+  ${g.on?`<div class="grid2 mt"><button class="btn p" data-a="gsNow">${ic('repeat')} Nu synchroniseren</button><button class="btn" data-a="gsLink">${ic('gear')} Instellingen</button></div><button class="btn ghost block mt" data-a="gsOff">Ontkoppelen</button>`:`<button class="btn p block mt" data-a="gsLink">Koppel Google Agenda</button><p class="small muted" style="margin:10px 0 0">Werkt via je Claude-account: voeg eenmalig "Google Calendar" toe bij claude.ai → Instellingen → Connectors.</p>`}</div>
+  <div class="section-t">Importeren uit een bestand (.ics)</div><div class="card" style="padding:16px"><p class="small muted" style="margin-top:0">Werkt met elke agenda: Google, Apple (iCloud), Outlook. Ideaal om je volledige geschiedenis binnen te halen.</p>
+  <details class="small muted mb"><summary style="color:var(--accent);font-weight:500;cursor:pointer">Hoe exporteer ik mijn agenda?</summary><p><b>Google:</b> op computer, calendar.google.com → tandwiel → Instellingen → Importeren en exporteren → Exporteren. Pak het zip-bestand uit.</p><p><b>Apple / iPhone:</b> op een Mac, app Agenda → Archief → Exporteer → Exporteer. Of op iCloud.com de agenda openbaar delen en de link openen.</p><p><b>Outlook:</b> Agenda → Delen → Publiceren → ICS-link, of Bestand → Opslaan als .ics.</p></details>
+  <button class="btn block" data-a="icsImport">${ic('save')} Kies .ics bestand</button>${n?`<p class="small muted" style="margin:10px 0 0">${n} afspraken komen uit je oude agenda.</p>`:''}</div>
+  <div class="section-t">Naar je agenda-app</div><div class="card" style="padding:16px"><p class="small muted" style="margin-top:0">Geen Google? Exporteer je afspraken als .ics en open het bestand op je iPhone of Mac om ze in Apple Agenda te zetten.</p><button class="btn block" data-a="icsExport">${ic('cal')} Exporteer afspraken (.ics)</button></div>`}
+
+/* ---------- import/export ---------- */
+function exportJSON(){const d=clone(S.demo?S.demo:S.data);copyText(JSON.stringify({app:'kitoko',v:1,exported:new Date().toISOString(),data:d}))}
+function exportCSV(){const{a,b}=period();const rows=[['datum','uur','klant','omschrijving','totaal','btw','betaalmethode']];salesIn(a,b).sort((x,y)=>(x.date+x.time).localeCompare(y.date+y.time)).forEach(s=>{const c=get('clients',s.clientId);rows.push([s.date,s.time,c?fullName(c):(s.clientName||''),s.lines.map(l=>l.qty+'x '+l.name).join(' | '),r2(s.total).toFixed(2).replace('.',','),r2(s.total-s.total/(1+(ST().vat||21)/100)).toFixed(2).replace('.',','),s.payments.map(p=>p.method+' '+r2(p.amount).toFixed(2).replace('.',',')).join(' + ')])});copyText(rows.map(r=>r.map(v=>/[;"\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':v).join(';')).join('\n'))}
+function importFile(){const inp=$('#jsonIn');inp.value='';inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const txt=String(r.result);if(f.name.toLowerCase().endsWith('.csv')||!txt.trim().startsWith('{'))return importCSV(txt);
+  try{const j=JSON.parse(txt);const d=j.data||j;if(!d.settings&&!d.clients)throw 0;confirmSheet('Backup terugzetten?','Bestaande gegevens met dezelfde id worden overschreven. Andere gegevens blijven staan.','Terugzetten',false,()=>{if(d.settings)saveSettings({...defaultSettings(),...d.settings,onboarded:true});[...ITEM,...BUCKET].forEach(t=>Object.values(d[t]||{}).forEach(o=>save(t,o)));toast('Backup teruggezet')})}catch(e){toast('Dit bestand kan ik niet lezen')}};r.readAsText(f)};inp.click()}
+function importCSV(txt){const lines=txt.split(/\r?\n/).filter(l=>l.trim());if(lines.length<2){toast('Leeg bestand');return}const sep=lines[0].includes(';')?';':',';const head=lines[0].split(sep).map(h=>norm(h.replace(/"/g,'')));
+  const idx=keys=>head.findIndex(h=>keys.some(k=>h.includes(k)));const iF=idx(['voornaam','first']),iL=idx(['familienaam','achternaam','last','naam']),iP=idx(['gsm','mobile','telefoon','phone']),iE=idx(['mail']),iC=idx(['gemeente','city','stad']);
+  const rows=lines.slice(1).map(l=>l.split(sep).map(v=>v.replace(/^"|"$/g,'').trim()));confirmSheet('Klanten importeren?',`${rows.length} klanten gevonden.`,'Importeren',false,()=>{let n=0;rows.forEach(r=>{const o={id:uid(),first:iF>=0?r[iF]:'',last:iL>=0&&iL!==iF?r[iL]:'',phone:iP>=0?r[iP]:'',email:iE>=0?r[iE]:'',city:iC>=0?r[iC]:'',tags:[],credit:0,createdAt:Date.now()};if(o.first||o.last){save('clients',o);n++}});toast(n+' klanten geïmporteerd')})}
+
+/* ---------- views + events ---------- */
+function viewTab(t){return({agenda:viewAgenda,klanten:viewKlanten,kassa:viewKassa,rapporten:viewRapporten,meer:viewMeer}[t]||viewAgenda)()}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el)return;lastScroll=0;const a=el.dataset.a,id=el.dataset.id,k=el.dataset.k;
+  switch(a){
+  case'tab':if(S.route.tab===k&&!S.route.stack.length){const v=$('#main .view');v&&v.scrollTo({top:0,behavior:'smooth'})}else go(k);break;
+  case'back':back();break;case'today':S.day=today();render();break;case'pickDay':S.day=el.dataset.d;render();break;case'week':S.day=addDays(S.day,7*k);render();break;case'staff':S.staffFilter=k;render();break;
+  case'newAppt':apptSheet({date:S.day,start:S.day===today()?toT(Math.ceil(nowMin()/15)*15):(openHours(S.day)?toT(openHours(S.day)[0]):'10:00')});break;
+  case'openAppt':apptDetail(id);break;case'client':S.clientTab='overzicht';if(S.route.tab!=='klanten'&&!S.route.stack.length){S.route.tab='klanten'}push('client',id);break;
+  case'newClient':clientSheet();break;case'editClient':clientSheet(get('clients',id));break;case'ctab':S.clientTab=k;render();break;case'cfilter':S.clientFilter=k;S.clientLimit=150;scrollMem['klanten/']=0;render(true);break;
+  case'bookClient':apptSheet({clientId:id,date:S.day>=today()?S.day:today(),start:'10:00'});break;case'payClient':checkout({clientId:id});break;
+  case'newCard':cardSheet(id);break;case'editCard':{const c=get('colorcards',id);cardSheet(c.clientId,c);break}
+  case'addCredit':amountSheet('Voorschot toevoegen','Bedrag (wordt tegoed van de klant)',v=>{const c=get('clients',id);save('clients',{...c,credit:r2((+c.credit||0)+v)});save('sales',{id:uid(),date:today(),time:toT(nowMin()),clientId:id,lines:[{kind:'tegoed',name:'Voorschot',qty:1,price:v}],payments:[{method:'Bancontact',amount:v}],total:v,status:'paid'});toast('Voorschot geregistreerd')});break;
+  case'newTicket':pickClient(cid=>checkout({clientId:cid}));break;case'oneoffTicket':checkout({});break;case'openTicket':checkout({saleId:id});break;case'payAppt':checkout({apptId:id});break;
+  case'receipt':{const s=get('sales',id);if(s)receiptSheet(s);break}
+  case'rep':S.repOffset=Math.min(0,S.repOffset+ +k);render();break;case'repP':S.repPeriod=k;S.repOffset=0;render();break;case'exportCSV':exportCSV();break;
+  case'pg-services':push('services');break;case'pg-products':push('products');break;case'pg-vouchers':push('vouchers');break;case'pg-punch':push('punch');break;case'pg-marketing':push('marketing');break;case'pg-settings':push('settings');break;case'pg-team':push('team');break;case'pg-backup':push('backup');break;case'pg-calsync':push('calsync');break;case'gsNow':gcalSync({manual:true});break;case'gsLink':gcalLink();break;case'icsImport':pickICS();break;case'icsExport':exportICS();break;
+  case'gsOff':confirmSheet('Google Agenda ontkoppelen?','Afspraken blijven in de app en in Google staan, ze worden alleen niet meer gelijk gehouden.','Ontkoppelen',true,()=>{saveSettings({...ST(),gcal:{...ST().gcal,on:false}});GS.err=null});break;
+  case'editSvc':svcSheet(get('services',id));break;case'defaultSvcs':loadDefaultServices();break;case'editProd':prodSheet(get('products',id));break;
+  case'stock':{const p=get('products',id);save('products',{...p,stock:(+p.stock||0)+ +k});break}
+  case'sellVoucher':amountSheet('Cadeaubon verkopen','Bedrag van de bon',v=>checkout({lines:[{kind:'cadeaubon',name:'Cadeaubon '+eur(v),qty:1,price:v}]}));break;
+  case'editStaff':staffSheet((ST().team||[]).find(t=>t.id===id));break;
+  case'cover':pickImage(d=>saveSettings({...ST(),cover:d}));break;case'rmCover':{const s=clone(ST());delete s.cover;saveSettings(s);break}
+  case'exportJSON':exportJSON();break;
+  case'qrAdd':pickImage(d=>{const s=clone(ST());s.qrs=[...(s.qrs||[]),{id:uid(),name:(s.qrs||[]).length?'QR '+((s.qrs||[]).length+1):'Payconiq',img:d}];saveSettings(s);toast('QR-code bewaard')},{max:640,png:true});break;
+  case'qrDel':confirmSheet('QR-code verwijderen?','','Verwijderen',true,()=>{const s=clone(ST());s.qrs.splice(+k,1);saveSettings(s)});break;
+  case'qrShowSet':showQR(null,{index:+k});break;
+  case'qrQuick':if(!(ST().qrs||[]).length){toast('Voeg eerst je QR-code toe');push('settings')}else amountSheet('Betaal-QR','Bedrag (optioneel)',v=>showQR(v),'',true);break;case'importFile':importFile();break;
+  case'finishOnb':{const s=defaultSettings();s.salon=$('#ob-salon').value.trim()||s.salon;s.owner=$('#ob-owner').value.trim()||s.owner;s.team[0].name=s.owner;s.onboarded=true;const svc=$('#ob-svc').checked;S.demo=null;saveSettings(s);if(svc&&!all('services').length)loadDefaultServices();go('agenda');toast('Welkom, '+s.owner+'!');break}
+  case'startDemo':S.demo=makeDemo();go('agenda');break;case'stopDemo':S.demo=null;go('agenda');break;
+  }});
+// klanten search & settings inputs
+let qT;document.addEventListener('input',e=>{if(e.target.id==='cq'){S.q=e.target.value;S.clientLimit=150;clearTimeout(qT);qT=setTimeout(()=>render(true),120)}});
+document.addEventListener('change',e=>{const t=e.target;const st=ST();
+  if(t.dataset.set){const s=clone(st);s[t.dataset.set]=t.dataset.num!=null?(+t.value||0):t.value;saveSettings(s)}
+  if(t.dataset.qrn!=null){const s=clone(st);s.qrs[+t.dataset.qrn].name=t.value.trim()||'QR';saveSettings(s)}
+  if(t.dataset.day!=null){const s=clone(st);s.hours[t.dataset.day]=t.checked?['09:00','18:00']:null;saveSettings(s)}
+  if(t.dataset.h!=null){const s=clone(st);const h=s.hours[t.dataset.h]||['09:00','18:00'];h[+t.dataset.i]=t.value;s.hours[t.dataset.h]=h;saveSettings(s)}});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(TABS.some(t=>t[0]===h)&&h!==S.route.tab)go(h)});
+setInterval(()=>{if(S.route.tab==='agenda'&&!S.route.stack.length&&!sheets.length&&S.day===today())render()},60000);
+
+/* ---------- boot ---------- */
+loadLocal();const h=location.hash.slice(1);if(TABS.some(t=>t[0]===h))S.route.tab=h;doRender();connect().then(()=>setTimeout(()=>gcalSync(),1500));setInterval(()=>{if(document.visibilityState==='visible')gcalSync()},5*60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){const g=ST().gcal;if(g&&g.on&&Date.now()-(g.last||0)>60000)gcalSync()}});
+})();
+</script>
+</body>
+</html>
