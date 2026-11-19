@@ -126,6 +126,8 @@ a{color:var(--accent);text-decoration:none}
 .tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 4px 10px;border-radius:20px;font-size:13.5px;font-weight:500;color:var(--ink);opacity:0;transform:translateY(8px)}
 .launch.on .tile{opacity:1;transform:none;transition:transform .35s cubic-bezier(.2,.9,.3,1) var(--d),opacity .25s var(--d)}
 .tile:active{transform:scale(.94)!important;background:var(--line)}
+.simbtn{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:10px 12px;border-radius:18px;background:var(--surface2);text-align:left}
+.simbtn .sq{width:44px;height:44px;border-radius:14px;background:var(--ink);color:var(--bg);display:grid;place-items:center;flex:none}.simbtn.on .sq{background:var(--accent);color:#fff}.simbtn:active{transform:scale(.98)}
 .tile .sq{width:66px;height:66px;border-radius:20px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
 .tile .sq svg.i{width:32px;height:32px;stroke-width:1.6}
 .tile.on .sq{background:var(--accent);color:#fff}
@@ -385,43 +387,46 @@ function loadDefaultServices(){DEFAULT_SERVICES.forEach(([name,cat,dur,price],i)
 function tpl(t,ctx){return String(t||'').replace(/\{(\w+)\}/g,(_,k)=>ctx[k]??'')}
 
 /* ---------- demo ---------- */
-function makeDemo(){const d=emptyData();const s=defaultSettings();s.onboarded=true;d.settings=s;
-  DEFAULT_SERVICES.forEach(([name,cat,dur,price],i)=>{const id='s'+i;d.services[id]={id,name,cat,dur,price,color:SVC_COLORS[i%SVC_COLORS.length],order:i}});
-  [['Oway Volume Root Spray 160ml','Oway',41.5,22,7],['Oway Colour Protection 240ml','Oway',36,19,2],['Olaplex No.3','Olaplex',30,16,11],['K18 Mask 50ml','K18',75,41,3]].forEach(([name,brand,price,cost,stock],i)=>{const id='p'+i;d.products[id]={id,name,brand,price,cost,stock,min:3}});
+function makeDemo(){const REAL=S.data||emptyData();const realSvc=Object.values(REAL.services||{}).filter(x=>x&&x.name&&+x.dur>0);const useReal=realSvc.length>=3;
+  const d=emptyData();const s=REAL.settings&&REAL.settings.onboarded?clone(REAL.settings):defaultSettings();s.onboarded=true;s.gcal=null;d.settings=s;
+  if(useReal)realSvc.forEach(x=>{d.services[x.id]=clone(x)});else DEFAULT_SERVICES.forEach(([name,cat,dur,price],i)=>{const id='s'+i;d.services[id]={id,name,cat,dur,price,color:SVC_COLORS[i%SVC_COLORS.length],order:i}});
+  const realProd=Object.values(REAL.products||{});if(realProd.length)realProd.forEach(x=>{d.products[x.id]=clone(x)});else [['Oway Volume Root Spray 160ml','Oway',41.5,22,7],['Oway Colour Protection 240ml','Oway',36,19,2],['Olaplex No.3','Olaplex',30,16,11],['K18 Mask 50ml','K18',75,41,3]].forEach(([name,brand,price,cost,stock],i)=>{const id='p'+i;d.products[id]={id,name,brand,price,cost,stock,min:3}});
   const names=[['Veerle','Marissen','0476 33 98 56'],['Stefan','Odeurs','0486 51 32 32'],['Kathy','Vanbockryck','0473 68 24 18'],['Adriana','Bolani','0475 75 42 27'],['Anja','Remans','0494 39 98 70'],['Angelina','Moors','0486 37 70 98'],['Lotte','Claes','0471 22 31 90'],['Sara','Peeters','0498 12 77 41'],['Nina','Janssens','0472 90 11 64'],['Elif','Yilmaz','0485 41 20 36'],['Marie','Lambrechts','0477 61 08 15'],['Tom','Vos','0491 33 45 80']];
   const cids=names.map(([first,last,phone],i)=>{const id='c'+i;d.clients[id]={id,first,last,phone,email:'',city:['Tongeren','Hasselt','Bilzen','Riemst'][i%4],tags:i%3===0?['Vaste klant']:[],notes:i===3?'Houdt van rustige afspraken, koffie zonder suiker.':'',warn:i===0?'Allergisch voor PPD: alleen PPD-vrije kleuring!':'',birthday:i===2?today().slice(0,5).replace(/^\d{4}/,'1984')+'-'+pad(Math.min(28,new Date().getDate()+3)):'',credit:i===0?92.01:0,createdAt:Date.now()-i*864e5*40};return id});
   const svcIds=Object.keys(d.services);const t=today();
-  const more=[['Lien','Smets','0478 22 41 09'],['Britt','Maes','0472 55 18 30'],['Sofie','Martens','0478 12 34 56'],['Ines','Vandenbosch','0499 61 72 05'],['Hanne','Wouters','0476 80 14 27'],['Jana','Peeters','0485 33 90 12'],['Yasmine','El Amrani','0488 47 25 63'],['Laura','Goossens','0471 09 66 48'],['Fien','Hermans','0497 28 51 34'],['Noor','Janssen','0473 75 02 91'],['Charlotte','Lenaerts','0479 14 63 87'],['Amber','Willems','0490 52 37 16']];
+  const more=[['Elise','Bastiaens','0470 18 26 34'],['Kaat','Thijs','0496 44 81 20'],['Lore','Vanherck','0474 60 39 51'],['Margot','Coenen','0483 27 15 68'],['Nathalie','Cuppens','0477 92 08 43'],['Romy','Jacobs','0489 13 57 26'],['Sien','Leemans','0495 70 34 82'],['Tessa','Bollen','0472 38 66 10'],['Zoë','Vanderhoven','0479 51 22 97'],['Dounia','Benali','0486 07 43 59'],['Evy','Schoofs','0473 84 19 05'],['Mira','Kenis','0498 26 70 31'],['Lien','Smets','0478 22 41 09'],['Britt','Maes','0472 55 18 30'],['Sofie','Martens','0478 12 34 56'],['Ines','Vandenbosch','0499 61 72 05'],['Hanne','Wouters','0476 80 14 27'],['Jana','Peeters','0485 33 90 12'],['Yasmine','El Amrani','0488 47 25 63'],['Laura','Goossens','0471 09 66 48'],['Fien','Hermans','0497 28 51 34'],['Noor','Janssen','0473 75 02 91'],['Charlotte','Lenaerts','0479 14 63 87'],['Amber','Willems','0490 52 37 16']];
   more.forEach(([first,last,phone],k)=>{const id='c'+(names.length+k);d.clients[id]={id,first,last,phone,email:'',city:['Tongeren','Bilzen','Riemst','Hoeselt','Hasselt'][k%5],tags:k%4===0?['Vaste klant']:[],notes:'',warn:'',credit:0,createdAt:Date.now()-k*864e5*25};cids.push(id)});
   // seeded random so the test version looks the same every time
   let seed=20261119;const rnd=()=>{seed=(seed*1664525+1013904223)%4294967296;return seed/4294967296};const pick=a=>a[Math.floor(rnd()*a.length)];
-  const S_=n=>'s'+n;const combos=[[0],[0,11],[1,4],[2],[2],[3],[4],[6,4],[6,0],[7,4],[8,10,4],[9,0],[13],[14,4],[1],[5],[12,4],[0,4]];
-  const procFor=sid=>/kleur|balayage|m[eè]che|keratine|botox/i.test(d.services[sid].name)?30:0;
+  const svcList=Object.values(d.services);const procFor=sid=>{const x=d.services[sid];return x.proc!=null&&x.proc!==''?+x.proc:(/kleur|balayage|babylight|m[eè]che|highlight|keratine|botox/i.test(x.name)?30:0)};
+  const finish=svcList.filter(x=>/brush|f[öo]hn|styling|droog|blow/i.test(x.name));const mains=svcList.filter(x=>!finish.includes(x));const shorts=svcList.filter(x=>+x.dur<=30&&!procFor(x.id));
+  const randCombo=()=>{const m=pick(mains.length?mains:svcList);const c=[m.id];if(finish.length&&!finish.includes(m)&&rnd()<(procFor(m.id)?.8:.3))c.push(pick(finish).id);return c};
+  const prodIds=Object.keys(d.products);
   const now=nowMin();let ai=0,ci=0;const methods=['Bancontact','Bancontact','Bancontact','Payconiq','Cash','QR-code'];
   for(let off=-21;off<=21;off++){const date=addDays(t,off);const h=s.hours[pISO(date).getDay()];if(!h)continue;const open=toMin(h[0]),close=toMin(h[1]);
     if(pISO(date).getDay()!==6&&rnd()<.6)d.appts['blk'+off]={id:'blk'+off,date,start:'12:30',dur:30,type:'blok',note:'Lunch',staffId:'me',status:'gepland',serviceIds:[]};
     for(let attempt=0;attempt<8;attempt++){const before={a:ai,c:ci};const n=3+Math.floor(rnd()*3);let cur=open+(attempt?0:Math.floor(rnd()*4)*15);let prev=null;let placed=0;const made=[];
-    for(let k=0;k<n*6&&placed<n;k++){let combo=pick(combos).map(S_);let segs=combo.map(x=>({sid:x,dur:d.services[x].dur,proc:procFor(x)}));let dur=segs.reduce((a,g)=>a+g.dur+g.proc,0);
+    for(let k=0;k<n*6&&placed<n;k++){let combo=randCombo();let segs=combo.map(x=>({sid:x,dur:d.services[x].dur,proc:procFor(x)}));let dur=segs.reduce((a,g)=>a+g.dur+g.proc,0);
       let start=cur;
       // book a short service inside the previous client's processing time
-      if(prev&&prev.procStart!=null&&rnd()<.55){const short=pick([[2],[3],[0],[11]]).map(S_);const sg=short.map(x=>({sid:x,dur:d.services[x].dur,proc:0}));const sd=sg.reduce((a,g)=>a+g.dur,0);const lunch=d.appts['blk'+off]&&prev.procStart<13*60&&prev.procStart+sd>12*60+30;if(sd<=prev.procLen&&!lunch){combo=short;segs=sg;dur=sd;start=prev.procStart}}
+      if(prev&&prev.procStart!=null&&rnd()<.55){const short=shorts.length?[pick(shorts).id]:[];if(!short.length)continue;const sg=short.map(x=>({sid:x,dur:d.services[x].dur,proc:0}));const sd=sg.reduce((a,g)=>a+g.dur,0);const lunch=d.appts['blk'+off]&&prev.procStart<13*60&&prev.procStart+sd>12*60+30;if(sd<=prev.procLen&&!lunch){combo=short;segs=sg;dur=sd;start=prev.procStart}}
       else if(d.appts['blk'+off]&&start<13*60&&start+dur>12*60+30)start=13*60;
       if(start+dur>close)continue;
       const id='a'+(ai++);const cid=cids[ci++%cids.length];const past=off<0||(off===0&&start+dur<=now);const status=past?(rnd()<.06?'noshow':'betaald'):(off===0&&start<=now?'aangekomen':'gepland');
       const a={id,date,start:toT(start),dur,segs,clientId:cid,serviceIds:combo,staffId:'me',type:'afspraak',status,note:''};
-      if(status==='betaald'){const lines=combo.map(x=>({kind:'dienst',refId:x,name:d.services[x].name,qty:1,price:d.services[x].price,staffId:'me'}));if(rnd()<.2)lines.push({kind:'product',refId:'p'+Math.floor(rnd()*4),name:'',qty:1,price:0});lines.forEach(l=>{if(l.kind==='product'){const p=d.products[l.refId];l.name=p.name;l.price=p.price}});
+      if(status==='betaald'){const lines=combo.map(x=>({kind:'dienst',refId:x,name:d.services[x].name,qty:1,price:d.services[x].price,staffId:'me'}));if(prodIds.length&&rnd()<.2)lines.push({kind:'product',refId:pick(prodIds),name:'',qty:1,price:0});lines.forEach(l=>{if(l.kind==='product'){const p=d.products[l.refId];l.name=p.name;l.price=p.price}});
         const total=lines.reduce((x,l)=>x+l.price*l.qty,0);const sid='x'+id;d.sales[sid]={id:sid,date,time:toT(start+dur),clientId:cid,apptId:id,lines,discount:0,payments:[{method:pick(methods),amount:total}],total,status:'paid'};a.saleId=sid}
       d.appts[id]=a;made.push(id);placed++;
       // where does the next one go? after the busy part, with a small gap
       let t2=start,pst=null,plen=0;segs.forEach(g=>{t2+=g.dur;if(g.proc){pst=t2;plen=g.proc}t2+=g.proc});
       prev=pst!=null&&start===cur?{procStart:pst,procLen:plen}:null;cur=Math.max(cur,start+dur)+(attempt>2?0:pick([0,0,15,15,30,45]))}
     if(placed>=3)break;made.forEach(id=>{const x=d.appts[id];if(x.saleId)delete d.sales[x.saleId];delete d.appts[id]});ai=before.a;ci=before.c}}
-  for(let k=22;k<=90;k++){if(k%7===0)continue;const n=1+((k*7)%4);for(let j=0;j<n;j++){const id='x'+k+'_'+j;const sv=svcIds[(k+j*3)%svcIds.length];const svc=d.services[sv];const lines=[{kind:'dienst',refId:sv,name:svc.name,qty:1,price:svc.price,staffId:'me'}];if((k+j)%5===0)lines.push({kind:'product',refId:'p0',name:'Oway Volume Root Spray 160ml',qty:1,price:41.5,staffId:'me'});const total=lines.reduce((a,l)=>a+l.price*l.qty,0);d.sales[id]={id,date:addDays(t,-k),time:toT(540+j*80),clientId:cids[(k+j)%cids.length],lines,discount:0,payments:[{method:(k+j)%4===0?'Cash':'Bancontact',amount:total}],total,status:'paid'}}}
+  for(let k=22;k<=90;k++){if(k%7===0)continue;const n=1+((k*7)%4);for(let j=0;j<n;j++){const id='x'+k+'_'+j;const sv=svcIds[(k+j*3)%svcIds.length];const svc=d.services[sv];const lines=[{kind:'dienst',refId:sv,name:svc.name,qty:1,price:svc.price,staffId:'me'}];if(prodIds.length&&(k+j)%5===0){const pp=d.products[prodIds[0]];lines.push({kind:'product',refId:pp.id,name:pp.name,qty:1,price:+pp.price||0,staffId:'me'})}const total=lines.reduce((a,l)=>a+l.price*l.qty,0);d.sales[id]={id,date:addDays(t,-k),time:toT(540+j*80),clientId:cids[(k+j)%cids.length],lines,discount:0,payments:[{method:(k+j)%4===0?'Cash':'Bancontact',amount:total}],total,status:'paid'}}}
   d.colorcards.k1={id:'k1',clientId:'c3',date:addDays(t,-300),formula:'3.0 + 20 vol',dev:'20 vol 1:1',time:35,result:'Mooie dekking, uitgroei 2 cm',photos:[]};
   d.colorcards.k2={id:'k2',clientId:'c3',date:addDays(t,-120),formula:'6N + 6M (1:1) · 9 vol',dev:'9 vol',time:30,result:'Iets warmer gewenst volgende keer',photos:[]};
   d.colorcards.k3={id:'k3',clientId:'c0',date:addDays(t,-45),formula:'PPD-vrij 7.3 + 7.0 · 6%',dev:'6%',time:40,result:'Goed verdragen',photos:[]};
   d.vouchers.v1={id:'v1',code:'KIT-4821',amount:50,balance:50,buyer:'Lotte Claes',date:addDays(t,-12)};
-  d.punchcards.b1={id:'b1',clientId:'c1',serviceId:'s2',name:'10 × Heren snit',total:10,used:6,price:250,date:addDays(t,-90)};
+  const pcs=shorts[0]||svcList[0];d.punchcards.b1={id:'b1',clientId:'c1',serviceId:pcs.id,name:'10 × '+pcs.name,total:10,used:6,price:250,date:addDays(t,-90)};
   return d}
 
 /* ---------- domain ---------- */
@@ -487,10 +492,11 @@ const TILES=[['agenda','Agenda','cal'],['klanten','Klanten','users'],['kassa','K
 function renderTabbar(){const hb=$('#homebtn');if(!ST().onboarded&&!S.demo){hb.style.display='none';return}hb.style.display='';if(!hb.innerHTML)hb.innerHTML=ic('home')}
 function curTile(){const top=S.route.stack[S.route.stack.length-1];if(top&&top.view!=='client')return top.view;return S.route.tab}
 function openLauncher(){if($('.launch'))return;const cur=curTile();const el=document.createElement('div');el.className='launch';el.setAttribute('role','dialog');el.setAttribute('aria-label','Menu');
-  el.innerHTML=`<div class="launch-scrim"></div><div class="launch-panel"><div class="launch-h"><b>${esc(ST().salon)}</b><button class="icon-btn" data-l="close" aria-label="Sluiten">${ic('x')}</button></div><div class="tiles">${TILES.map(([k,l,i],n)=>`<button class="tile${cur===k?' on':''}" data-l="${k}" style="--d:${n*18}ms"><span class="sq">${ic(i)}</span><span>${l}</span></button>`).join('')}</div></div>`;
+  el.innerHTML=`<div class="launch-scrim"></div><div class="launch-panel"><div class="launch-h"><b>${esc(ST().salon)}</b><button class="icon-btn" data-l="close" aria-label="Sluiten">${ic('x')}</button></div><div class="tiles">${TILES.map(([k,l,i],n)=>`<button class="tile${cur===k?' on':''}" data-l="${k}" style="--d:${n*18}ms"><span class="sq">${ic(i)}</span><span>${l}</span></button>`).join('')}</div><button class="simbtn${S.demo?' on':''}" data-l="sim"><span class="sq">${ic('spark')}</span><span class="row-main"><span class="row-t" style="display:block">${S.demo?'Simulatie stoppen':'Simulatie'}</span><span class="row-s" style="display:block">${S.demo?'Terug naar je echte agenda':'Je agenda met 3–5 boekingen per dag en 36 klanten'}</span></span>${ic('right','chev')}</button></div>`;
   document.body.appendChild(el);haptic();requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));
   const kd=e=>{if(e.key==='Escape')close()};const close=()=>{el.classList.remove('on');setTimeout(()=>el.remove(),260);document.removeEventListener('keydown',kd)};document.addEventListener('keydown',kd);
   el.addEventListener('click',e=>{if(e.target.classList.contains('launch-scrim')){close();return}const t=e.target.closest('[data-l]');if(!t)return;const k=t.dataset.l;close();if(k==='close')return;
+    if(k==='sim'){if(S.demo){S.demo=null;go('agenda');toast('Simulatie gestopt')}else{S.demo=makeDemo();S.day=today();go('agenda');toast('Simulatie gestart · er wordt niets bewaard')}return}
     if(TABS.some(x=>x[0]===k))go(k);else{S.route={tab:'meer',stack:[{view:k}]};try{history.replaceState(null,'','#meer')}catch(_){}render(true);requestAnimationFrame(()=>window.scrollTo(0,0))}});
   const pnl=$('.launch-panel',el);let y0=null;pnl.addEventListener('touchstart',e=>{y0=e.touches[0].clientY},{passive:true});
   pnl.addEventListener('touchmove',e=>{if(y0==null)return;const dy=e.touches[0].clientY-y0;if(dy>0){pnl.style.transition='none';pnl.style.transform=`translateY(${dy}px)`}},{passive:true});
@@ -528,7 +534,7 @@ let solidState=null,sTick=false;function navSolid(force){const n=$('#main .nav')
 window.addEventListener('scroll',()=>{lastScroll=performance.now();if(sTick)return;sTick=true;requestAnimationFrame(()=>{sTick=false;navSolid()})},{passive:true});
 let lockN=0,lockY=0;function lockScroll(){if(lockN++===0){lockY=window.scrollY;document.body.style.top=(-lockY)+'px';document.body.classList.add('locked')}}
 function unlockScroll(){if(lockN>0&&--lockN===0){document.body.classList.remove('locked');document.body.style.top='';window.scrollTo(0,lockY)}}
-function renderDemoBar(){let b=$('#demobar');if(S.demo){if(!b){b=document.createElement('div');b.id='demobar';b.className='demo-bar';b.innerHTML=`<span>Demo</span><button data-a="stopDemo">Stop</button>`;document.body.appendChild(b)}}else b?.remove()}
+function renderDemoBar(){let b=$('#demobar');if(S.demo){if(!b){b=document.createElement('div');b.id='demobar';b.className='demo-bar';b.innerHTML=`<span>Simulatie</span><button data-a="stopDemo">Stop</button>`;document.body.appendChild(b)}}else b?.remove()}
 function go(tab){S.route={tab,stack:[]};try{history.replaceState(null,'','#'+tab)}catch(e){}render(true)}
 function push(view,id){S.route.stack.push({view,id});render(true);requestAnimationFrame(()=>window.scrollTo(0,0))}
 function back(){S.route.stack.pop();render(true)}

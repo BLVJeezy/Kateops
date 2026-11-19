@@ -4,7 +4,7 @@ A salon app for **Kitoko by Kate**, a hairstylist who works solo. It covers what
 
 Live version (Claude artifact): https://claude.ai/artifact/VYP35Qpkv9P25rBn9y4tgQ
 
-Test version with sample data (nothing is saved): add `#demo` to the link, e.g. https://kateops.vercel.app/#demo. Three weeks of bookings (3–5 per day), clients, colour cards, payments and reports.
+**Simulation:** home button → *Simulatie*. Shows Kate's own services, opening hours and products with 3–5 bookings per day over six weeks (three back, three ahead) and 36 sample clients. Nothing is saved; *Stop* returns to her real data. Also opens directly via `#demo` in the URL.
 
 ## Features
 - **Agenda**: one day at a time, with a week strip at the top. Swipe between days, tap an empty slot to book, find the next free slot, repeat appointments, block time for breaks.
