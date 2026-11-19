@@ -12,6 +12,7 @@
 - Motion: Apple-style springs (critically damped default), draggable bottom sheets with velocity projection, reduced-motion respected.
 
 ## Decisions (newest first)
+- 2026-11-19 — Test version: `#demo` (or `#test`) in the URL opens demo mode directly. makeDemo generates −21…+21 days, 3–5 bookings per open day (seeded RNG, same every time), lunch blocks, short bookings during processing time, payments for past bookings, 24 clients, sales history back to −90 days. Checked: no double bookings, no lunch overlaps.
 - 2026-11-19 — Kate's feedback: appointments now hold `segs` [{sid,dur,proc}]. Each treatment is its own block in the agenda, and processing time (inwerktijd) is a striped block that does NOT count as busy, so another client can be booked in it (conflicts/findFree use busy intervals only). Drag the handle at the bottom of a block to change its duration (5-min steps). Services have a `proc` field; default 30 for kleur/keratine/botox/balayage/mèches/highlights. Old appointments without segs: proc 0, total kept.
 - 2026-11-19 — Repeating series: edit or delete asks "Alleen deze" or "Deze en volgende"; a one-off change is marked `exception:true`.
 - 2026-11-19 — Navigation: tab bar removed → one home button (bottom centre) that opens a launcher with 12 large square tiles (Optios-style). Sub-pages open as meer/<view>.

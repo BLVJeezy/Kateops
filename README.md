@@ -4,6 +4,8 @@ A salon app for **Kitoko by Kate**, a hairstylist who works solo. It covers what
 
 Live version (Claude artifact): https://claude.ai/artifact/VYP35Qpkv9P25rBn9y4tgQ
 
+Test version with sample data (nothing is saved): add `#demo` to the link, e.g. https://kateops.vercel.app/#demo. Three weeks of bookings (3–5 per day), clients, colour cards, payments and reports.
+
 ## Features
 - **Agenda**: one day at a time, with a week strip at the top. Swipe between days, tap an empty slot to book, find the next free slot, repeat appointments, block time for breaks.
 - **Klanten (clients)**: client file with warnings (e.g. allergy), tags, history, purchased products, prepaid credit and punch cards.
