@@ -12,6 +12,7 @@ Live version (Claude artifact): https://claude.ai/artifact/VYP35Qpkv9P25rBn9y4tg
 - **Rapporten (reports)**: revenue, BTW (VAT), how full the agenda was, no-shows, top services and best clients, CSV export for the accountant.
 - **Calendar**: .ics import (Google, Apple, Outlook), two-way sync with Google Calendar, .ics export.
 - **Marketing**: WhatsApp reminders for tomorrow, messages to clients who haven't been back in a while, birthdays.
+- **Menu**: one home button, opening a grid of large tiles for every page.
 - **Meer (more)**: services, products and stock, gift cards, team, opening hours, backup/import (JSON, CSV).
 
 ## Technology

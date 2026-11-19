@@ -2,7 +2,7 @@
 
 ## Overview
 - Client / purpose: BLV's sister Kate, solo hairstylist ("Kitoko by Kate"). Optios-like salon app, solo-first, team-ready later.
-- Live URL / repo: claude.ai artifact (single index.html), see Status.
+- Live URL / repo: claude.ai artifact https://claude.ai/artifact/VYP35Qpkv9P25rBn9y4tgQ · GitHub BLVJeezy/kateops (main) · Vercel kateops.vercel.app (no Claude db/sync there → localStorage only).
 - Stack: one self-contained HTML file, vanilla JS, no build. Persistence: artifact `db` capability under the viewer's private `data/users/<id>/salon` (settings in that doc; collections clients/services/products/colorcards/vouchers/punchcards one doc per item; appts/sales bucketed per month `YYYY-MM` docs `{items:{}}`). localStorage = cache/offline fallback. Demo mode = in-memory only.
 
 ## Design system
@@ -12,6 +12,8 @@
 - Motion: Apple-style springs (critically damped default), draggable bottom sheets with velocity projection, reduced-motion respected.
 
 ## Decisions (newest first)
+- 2026-11-19 — Navigation: tab bar removed → one home button (bottom centre) that opens a launcher with 12 large square tiles (Optios-style). Sub-pages open as meer/<view>.
+- 2026-11-19 — Scrolling: switched from an inner scroll container to normal page scrolling (window) for smoother iPhone scrolling; sticky nav + week strip; background locked while a sheet is open; tap on the timeline ignored right after a scroll.
 - 2026-11-19 — Betaal-QR: Kate uploads her own QR (max 3, PNG 640px, settings.qrs). Kassa button "Toon betaal-QR" + checkout method "QR-code" → full-screen white QR with amount + "Betaling ontvangen".
 - 2026-11-19 — Scroll pass: renders wait while she's scrolling or touching (no stopped swipes), rAF-throttled scroll handler, scroll position kept per tab, client list loads 150 rows at a time as she scrolls, debounced search, tap nav title = scroll to top.
 - 2026-11-19 — Mobile-first pass: 16px inputs (no iOS zoom), sticky week strip, swipe from the left edge to go back, sheets that move up with the keyboard, haptics, bigger tap targets.
