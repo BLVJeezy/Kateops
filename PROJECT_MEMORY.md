@@ -12,6 +12,7 @@
 - Motion: Apple-style springs (critically damped default), draggable bottom sheets with velocity projection, reduced-motion respected.
 
 ## Decisions (newest first)
+- 2026-11-20 — Every service has its own colour: 18-colour palette, new services get a free colour (freeColor), duplicates are fixed once on load/sync (ensureServiceColors), colours already used are dimmed in the picker. New service name with kleur/keratine/botox… pre-fills 30 min processing time.
 - 2026-11-20 — Repeat options: Niet / Week / Maand. Week: every 1–12 weeks on one or more weekdays (chips). Maand: every 1–6 months on the same date (clamped to month end) or the same nth weekday (nth>4 = last). Count up to 52. Preview of the first dates (closed days marked). Stored as appt.repeatRule {freq,every,days,monthMode}; repeatDates(f) generates, repeatLabel(a) describes.
 - 2026-11-20 — Series: an existing appointment can be made repeating via Wijzigen (Herhalen). Drag, resize and reorder on a series appointment apply to that one first, then ask 'Alleen deze afspraak' / 'Ook de X volgende'. Detail shows how many follow, plus 'Stoppen' (removes the following ones).
 - 2026-11-20 — Processing time is shown as an empty gap in the agenda (only a thin dotted line on the left, no block, no label, no resize handle); other appointments in that time use the full width. Processing time is still listed and adjustable in the appointment detail and Wijzigen.
