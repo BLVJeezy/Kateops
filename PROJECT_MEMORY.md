@@ -12,6 +12,7 @@
 - Motion: Apple-style springs (critically damped default), draggable bottom sheets with velocity projection, reduced-motion respected.
 
 ## Decisions (newest first)
+- 2026-11-20 — Series: an existing appointment can be made repeating via Wijzigen (Herhalen). Drag, resize and reorder on a series appointment apply to that one first, then ask 'Alleen deze afspraak' / 'Ook de X volgende'. Detail shows how many follow, plus 'Stoppen' (removes the following ones).
 - 2026-11-20 — Processing time is shown as an empty gap in the agenda (only a thin dotted line on the left, no block, no label, no resize handle); other appointments in that time use the full width. Processing time is still listed and adjustable in the appointment detail and Wijzigen.
 - 2026-11-20 — Treatments move independently: segs can carry `off` (minutes from the appointment start). Long-press a treatment block in an appointment with several treatments → only that treatment (with its processing time) moves; normSegs sorts, prevents self-overlap and rebases a.start. Single-treatment appointments and blocks still move whole. Reorder arrows reset to back-to-back. Each block shows its own time.
 - 2026-11-20 — Treatment order is changeable: up/down arrows in the appointment detail (saves immediately, agenda follows) and in Afspraak wijzigen → Planning. Processing time stays with its own treatment; reordering a series appointment marks it as an exception.
